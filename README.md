@@ -1,1 +1,3 @@
-# playkit-js-chromecast-receiver
+# PlayKit JS Cast Receiver
+
+WIP
