@@ -7,6 +7,7 @@ const DefaultPlayerConfig: Object = {
   playback: {
     autoplay: false,
     preload: 'none',
+    disableUserCache: true,
     streamPriority: [
       {
         engine: EngineType.CAST,

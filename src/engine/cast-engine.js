@@ -1,7 +1,8 @@
 // @flow
 import {core} from 'kaltura-player-js';
+import {CAST_MEDIA_PLAYER_TAG} from '../player/player-loader';
 
-const {Track, Utils, FakeEvent, MediaType, EventManager, getLogger, FakeEventTarget, EventType, AudioTrack, TextTrack} = core;
+const {Track, Utils, FakeEvent, MediaType, getLogger, FakeEventTarget, EventType, AudioTrack, TextTrack} = core;
 
 class CastEngine extends FakeEventTarget {
   static get id(): string {
@@ -10,7 +11,11 @@ class CastEngine extends FakeEventTarget {
 
   // eslint-disable-next-line no-unused-vars
   static canPlaySource(source: Object, preferNative: boolean): boolean {
-    return CastEngine._supportedMimeTypes.includes(source.mimetype);
+    try {
+      return CastEngine._supportedMimeTypes.includes(source.mimetype.toLowerCase());
+    } catch (e) {
+      return false;
+    }
   }
 
   static createEngine(source: Object, config: Object): Object {
@@ -31,11 +36,15 @@ class CastEngine extends FakeEventTarget {
   _config: Object;
   _isLoaded: boolean = false;
   _tracks: Array<Track> = [];
-  _eventManager: EventManager;
   _volume: number = 1;
   _muted: boolean = false;
   _paused: boolean = false;
   _seeking: boolean = false;
+  _onSeekedEvent: Function;
+  _onSeekingEvent: Function;
+  _onPlayEvent: Function;
+  _onPauseEvent: Function;
+  _onMediaElementEvent: Function;
   _mediaElementEvents: Array<string> = [
     cast.framework.events.EventType.ABORT,
     cast.framework.events.EventType.CAN_PLAY,
@@ -65,37 +74,32 @@ class CastEngine extends FakeEventTarget {
     this._config = config;
     this._context = cast.framework.CastReceiverContext.getInstance();
     this._playerManager = this._context.getPlayerManager();
-    this._eventManager = new EventManager();
+    this._bindEvents();
     this._createVideoElement();
     this.attach();
   }
 
-  // eslint-disable-next-line no-unused-vars
   restore(source: Object, config: Object): void {
-    // TODO
+    this.reset();
+    this._source = source;
+    this._config = config;
   }
 
   attach(): void {
-    this._mediaElementEvents.forEach(mediaElementEvent => {
-      this._playerManager.addEventListener(mediaElementEvent, () => {
-        this.dispatchEvent(new FakeEvent(EventType[mediaElementEvent]));
-      });
-    });
-    this._playerManager.addEventListener(cast.framework.events.EventType.SEEKED, () => {
-      this._seeking = false;
-    });
-    this._playerManager.addEventListener(cast.framework.events.EventType.SEEKING, () => {
-      this._seeking = true;
-    });
-    this._playerManager.addEventListener(cast.framework.events.EventType.PLAY, () => {
-      this._paused = true;
-    });
-    this._playerManager.addEventListener(cast.framework.events.EventType.PAUSE, () => {
-      this._paused = false;
-    });
+    this._mediaElementEvents.forEach(mediaElementEvent => this._playerManager.addEventListener(mediaElementEvent, this._onMediaElementEvent));
+    this._playerManager.addEventListener(cast.framework.events.EventType.SEEKED, this._onSeekedEvent);
+    this._playerManager.addEventListener(cast.framework.events.EventType.SEEKING, this._onSeekingEvent);
+    this._playerManager.addEventListener(cast.framework.events.EventType.PLAY, this._onPlayEvent);
+    this._playerManager.addEventListener(cast.framework.events.EventType.PAUSE, this._onPauseEvent);
   }
 
-  detach(): void {}
+  detach(): void {
+    this._mediaElementEvents.forEach(mediaElementEvent => this._playerManager.removeEventListener(mediaElementEvent, this._onMediaElementEvent));
+    this._playerManager.removeEventListener(cast.framework.events.EventType.SEEKED, this._onSeekedEvent);
+    this._playerManager.removeEventListener(cast.framework.events.EventType.SEEKING, this._onSeekingEvent);
+    this._playerManager.removeEventListener(cast.framework.events.EventType.PLAY, this._onPlayEvent);
+    this._playerManager.removeEventListener(cast.framework.events.EventType.PAUSE, this._onPauseEvent);
+  }
 
   static runCapabilities(): void {
     // Empty implementation
@@ -167,19 +171,40 @@ class CastEngine extends FakeEventTarget {
   }
 
   seekToLiveEdge(): void {
-    // TODO
+    const range = this._playerManager.getLiveSeekableRange();
+    if (range) {
+      this._playerManager.seek(range.end);
+    }
   }
 
   getStartTimeOfDvrWindow(): number {
-    // TODO
+    const range = this._playerManager.getLiveSeekableRange();
+    if (range) {
+      return range.start;
+    }
+    return 0;
   }
 
   reset(): void {
-    // TODO
+    this._tracks = [];
+    this._isLoaded = false;
+    this._paused = false;
+    this._seeking = false;
   }
 
   destroy(): void {
-    // TODO
+    this._tracks = [];
+    this._isLoaded = false;
+    this._mediaElementEvents = [];
+    this._volume = 1;
+    this._muted = false;
+    this._paused = false;
+    this._seeking = false;
+    this.detach();
+    if (this._el) {
+      Utils.Dom.removeAttribute(this._el, 'src');
+      Utils.Dom.removeChild(this._el.parentNode, this._el);
+    }
   }
 
   set currentTime(value: number): void {
@@ -187,6 +212,9 @@ class CastEngine extends FakeEventTarget {
   }
 
   get currentTime(): number {
+    if (this.isLive()) {
+      return this._playerManager.getCurrentTimeSec() - this.getStartTimeOfDvrWindow();
+    }
     return this._playerManager.getCurrentTimeSec();
   }
 
@@ -219,6 +247,12 @@ class CastEngine extends FakeEventTarget {
   }
 
   get duration(): number {
+    if (this.isLive()) {
+      const range = this._playerManager.getLiveSeekableRange();
+      if (range) {
+        return range.end - this.getStartTimeOfDvrWindow();
+      }
+    }
     return this._playerManager.getDurationSec();
   }
 
@@ -246,7 +280,7 @@ class CastEngine extends FakeEventTarget {
     return [1];
   }
 
-  get defaultPlaybackRate(): Array<number> {
+  get defaultPlaybackRate(): number {
     return 1;
   }
 
@@ -257,8 +291,10 @@ class CastEngine extends FakeEventTarget {
   get crossOrigin(): ?string {}
 
   _createVideoElement(): void {
-    this._el = document.createElement('video');
-    this._el.className = 'mediaElement';
+    const castMediaPlayerEl: Object = document.getElementsByTagName(CAST_MEDIA_PLAYER_TAG)[0];
+    if (castMediaPlayerEl) {
+      this._el = castMediaPlayerEl.getMediaElement();
+    }
   }
 
   _parseTracks(): void {
@@ -302,6 +338,34 @@ class CastEngine extends FakeEventTarget {
       audioTracks.push(new AudioTrack(settings));
     });
     return audioTracks;
+  }
+
+  _bindEvents(): void {
+    this._onMediaElementEvent = this._onMediaElementEvent.bind(this);
+    this._onSeekingEvent = this._onSeekingEvent.bind(this);
+    this._onSeekedEvent = this._onSeekedEvent.bind(this);
+    this._onPlayEvent = this._onPlayEvent.bind(this);
+    this._onPauseEvent = this._onPauseEvent.bind(this);
+  }
+
+  _onSeekingEvent(): void {
+    this._seeking = true;
+  }
+
+  _onSeekedEvent(): void {
+    this._seeking = false;
+  }
+
+  _onPlayEvent(): void {
+    this._paused = false;
+  }
+
+  _onPauseEvent(): void {
+    this._paused = true;
+  }
+
+  _onMediaElementEvent(mediaElementEvent: string): void {
+    this.dispatchEvent(new FakeEvent(EventType[mediaElementEvent]));
   }
 }
 

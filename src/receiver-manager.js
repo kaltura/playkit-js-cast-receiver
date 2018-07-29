@@ -3,27 +3,56 @@ import {cast as remote, core} from 'kaltura-player-js';
 import {PlayerLoader} from './player/player-loader';
 
 const {TextStyleConverter} = remote;
-const {FakeEvent, TrackType} = core;
+const {FakeEvent, TrackType, EventManager} = core;
 
 class ReceiverManager {
   _context: Object;
   _playerManager: Object;
+  _eventManager: EventManager;
+  _player: Object;
 
   constructor(config: Object) {
     this._context = cast.framework.CastReceiverContext.getInstance();
     this._playerManager = this._context.getPlayerManager();
+    this._eventManager = new EventManager();
     window.player = this._player = PlayerLoader.loadPlayer(config);
     this._attachListeners();
     this._attachInterceptors();
   }
 
-  loadMedia(loadRequestData: Object): Promise<Object> {
+  onLoad(loadRequestData: Object): Promise<Object> {
+    this._reset();
     return new Promise((resovle, reject) => {
       const mediaInfo = loadRequestData.media.customData.mediaInfo;
-      this._player.addEventListener(this._player.Event.ERROR, event => reject(event));
-      this._player.addEventListener(this._player.Event.SOURCE_SELECTED, event => this._setMediaInfo(event, loadRequestData, resovle));
+      this._eventManager.listen(this._player, this._player.Event.ERROR, event => reject(event));
+      this._eventManager.listen(this._player, this._player.Event.SOURCE_SELECTED, event => this._setMediaInfo(event, loadRequestData, resovle));
       this._player.loadMedia(mediaInfo);
     });
+  }
+
+  onStop(requestData: Object): Promise<Object> {
+    this._destroy();
+    return requestData;
+  }
+
+  onMediaStatus(mediaStatus: Object): Promise<Object> {
+    if (this._player.isLive()) {
+      mediaStatus.currentTime = this._player.currentTime;
+      if (mediaStatus.media) {
+        mediaStatus.media.duration = this._player.duration;
+      }
+    }
+    return mediaStatus;
+  }
+
+  _reset(): void {
+    this._eventManager.removeAll();
+    this._player.reset();
+  }
+
+  _destroy(): void {
+    this._eventManager.destroy();
+    this._player.destroy();
   }
 
   _setMediaInfo(event: FakeEvent, loadRequestData: Object, resolve: Function): void {
@@ -36,6 +65,11 @@ class ReceiverManager {
     loadRequestData.media.metadata.title = this._player.config.sources.metadata.name;
     loadRequestData.media.metadata.subtitle = this._player.config.sources.metadata.description;
     loadRequestData.media.metadata.images = [{url: this._player.config.sources.poster}];
+    loadRequestData.media.customData = loadRequestData.media.customData || {};
+    loadRequestData.media.customData.mediaInfo = this._player.getMediaInfo();
+    loadRequestData.media.customData.playbackInfo = {
+      isDvr: this._player.isDvr()
+    };
     resolve(loadRequestData);
   }
 
@@ -58,11 +92,13 @@ class ReceiverManager {
       audioTracksManager.setActiveByLanguage(audioLanguage);
     } else {
       const audioTracks = audioTracksManager.getTracks();
-      const audioTrackId = audioTracks[0].trackId;
-      const audioTrack = this._player.getTracks(TrackType.AUDIO).find(t => t.id === audioTrackId);
-      if (audioTrack) {
-        audioTracksManager.setActiveById(audioTrackId);
-        this._player.selectTrack(audioTrack);
+      if (audioTracks.length > 0) {
+        const audioTrackId = audioTracks[0].trackId;
+        const audioTrack = this._player.getTracks(TrackType.AUDIO).find(t => t.id === audioTrackId);
+        if (audioTrack) {
+          audioTracksManager.setActiveById(audioTrackId);
+          this._player.selectTrack(audioTrack);
+        }
       }
     }
   }
@@ -72,6 +108,9 @@ class ReceiverManager {
       this._player.load();
       this._player.ready().then(() => {
         this._setInitialTracks();
+        if (this._player.isLive() && !this._player.isDvr()) {
+          this._player.seekToLiveEdge();
+        }
       });
     });
     this._playerManager.addEventListener(cast.framework.events.EventType.REQUEST_EDIT_TRACKS_INFO, requestEvent => {
@@ -84,14 +123,9 @@ class ReceiverManager {
         this._handleTextStyleSelection(textTrackStyle);
       }
     });
-    this._playerManager.addEventListener(cast.framework.events.EventType.REQUEST_VOLUME_CHANGE, requestEvent => {
-      const volume = requestEvent.requestData.volume.level;
-      const muted = requestEvent.requestData.volume.muted;
-      if (this._player.volume !== volume) {
-        this._player.volume = volume;
-      }
-      if (this._player.muted !== muted) {
-        this._player.muted = muted;
+    this._playerManager.addEventListener(cast.framework.events.EventType.REQUEST_PLAY, () => {
+      if (this._player.isLive() && !this._player.isDvr()) {
+        this._player.seekToLiveEdge();
       }
     });
   }
@@ -122,14 +156,9 @@ class ReceiverManager {
   }
 
   _attachInterceptors(): void {
-    this._playerManager.setMessageInterceptor(cast.framework.messages.MessageType.MEDIA_STATUS, status => {
-      if (this._player) {
-        status.customData = {
-          mediaInfo: this._player.getMediaInfo()
-        };
-      }
-      return status;
-    });
+    this._playerManager.setMessageInterceptor(cast.framework.messages.MessageType.LOAD, loadRequestData => this.onLoad(loadRequestData));
+    this._playerManager.setMessageInterceptor(cast.framework.messages.MessageType.MEDIA_STATUS, mediaStatus => this.onMediaStatus(mediaStatus));
+    this._playerManager.setMessageInterceptor(cast.framework.messages.MessageType.STOP, requestData => this.onStop(requestData));
   }
 }
 
