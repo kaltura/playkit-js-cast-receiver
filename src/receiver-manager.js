@@ -3,7 +3,7 @@ import {cast as remote, core} from 'kaltura-player-js';
 import {PlayerLoader} from './player/player-loader';
 
 const {TextStyleConverter} = remote;
-const {FakeEvent, TrackType, EventManager} = core;
+const {FakeEvent, TrackType, EventManager, DrmScheme} = core;
 
 class ReceiverManager {
   _context: Object;
@@ -25,7 +25,7 @@ class ReceiverManager {
     return new Promise((resovle, reject) => {
       const mediaInfo = loadRequestData.media.customData.mediaInfo;
       this._eventManager.listen(this._player, this._player.Event.ERROR, event => reject(event));
-      this._eventManager.listen(this._player, this._player.Event.SOURCE_SELECTED, event => this._setMediaInfo(event, loadRequestData, resovle));
+      this._eventManager.listen(this._player, this._player.Event.SOURCE_SELECTED, event => this._onSourceSelected(event, loadRequestData, resovle));
       this._player.loadMedia(mediaInfo);
     });
   }
@@ -55,8 +55,14 @@ class ReceiverManager {
     this._player.destroy();
   }
 
-  _setMediaInfo(event: FakeEvent, loadRequestData: Object, resolve: Function): void {
+  _onSourceSelected(event: FakeEvent, loadRequestData: Object, resolve: Function): void {
     const source = event.payload.selectedSource[0];
+    this._setMediaInfo(loadRequestData, source);
+    this._maybeSetDrmLicenseUrl(source);
+    resolve(loadRequestData);
+  }
+
+  _setMediaInfo(loadRequestData: Object, source: Object): void {
     loadRequestData.media.contentId = source.id;
     loadRequestData.media.contentUrl = source.url;
     loadRequestData.media.contentType = source.mimetype;
@@ -67,10 +73,20 @@ class ReceiverManager {
     loadRequestData.media.metadata.images = [{url: this._player.config.sources.poster}];
     loadRequestData.media.customData = loadRequestData.media.customData || {};
     loadRequestData.media.customData.mediaInfo = this._player.getMediaInfo();
-    loadRequestData.media.customData.playbackInfo = {
-      isDvr: this._player.isDvr()
-    };
-    resolve(loadRequestData);
+    loadRequestData.media.customData.playbackInfo = {isDvr: this._player.isDvr()};
+  }
+
+  _maybeSetDrmLicenseUrl(source: Object): void {
+    if (source.drmData) {
+      const data = source.drmData.find(data => data.scheme === DrmScheme.WIDEVINE);
+      if (data) {
+        this._playerManager.setMediaPlaybackInfoHandler((loadRequest, playbackConfig) => {
+          playbackConfig.protectionSystem = cast.framework.ContentProtection.WIDEVINE;
+          playbackConfig.licenseUrl = data.licenseUrl;
+          return playbackConfig;
+        });
+      }
+    }
   }
 
   _setInitialTracks(): void {
