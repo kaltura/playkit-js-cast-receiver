@@ -36,10 +36,14 @@ class ReceiverManager {
   }
 
   onMediaStatus(mediaStatus: Object): Promise<Object> {
-    if (this._player.isLive()) {
-      mediaStatus.currentTime = this._player.currentTime;
-      if (mediaStatus.media) {
-        mediaStatus.media.duration = this._player.duration;
+    mediaStatus.customData = mediaStatus.customData || {};
+    if (this._player) {
+      mediaStatus.customData.mediaInfo = this._player.getMediaInfo();
+      if (this._player.isLive()) {
+        mediaStatus.currentTime = this._player.currentTime;
+        if (mediaStatus.media) {
+          mediaStatus.media.duration = this._player.duration;
+        }
       }
     }
     return mediaStatus;
@@ -71,9 +75,6 @@ class ReceiverManager {
     loadRequestData.media.metadata.title = this._player.config.sources.metadata.name;
     loadRequestData.media.metadata.subtitle = this._player.config.sources.metadata.description;
     loadRequestData.media.metadata.images = [{url: this._player.config.sources.poster}];
-    loadRequestData.media.customData = loadRequestData.media.customData || {};
-    loadRequestData.media.customData.mediaInfo = this._player.getMediaInfo();
-    loadRequestData.media.customData.playbackInfo = {isDvr: this._player.isDvr()};
   }
 
   _maybeSetDrmLicenseUrl(source: Object): void {
