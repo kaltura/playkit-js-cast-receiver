@@ -92,8 +92,10 @@ class ReceiverManager {
 
   _setInitialTracks(): void {
     const mediaInfo = this._playerManager.getMediaInformation();
-    this._setInitialAudioTrack(mediaInfo.customData.audioLanguage);
-    this._setInitialTextTrack(mediaInfo.customData.textLanguage);
+    if (mediaInfo.customData) {
+      this._setInitialAudioTrack(mediaInfo.customData.audioLanguage);
+      this._setInitialTextTrack(mediaInfo.customData.textLanguage);
+    }
   }
 
   _setInitialTextTrack(textLanguage: ?string): void {
