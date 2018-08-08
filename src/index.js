@@ -1,5 +1,5 @@
 // @flow
-import {ReceiverAPI} from './receiver-api';
+import {ReceiverManagerAPI} from './receiver-manager-api';
 
 declare var __VERSION__: string;
 declare var __NAME__: string;
@@ -7,16 +7,15 @@ declare var __NAME__: string;
 let instance;
 
 /**
- * Gets the receiver api singleton.
+ * Factory instantiation method.
  * @param {Object} config - The receiver manager config.
- * @returns {ReceiverManager} - Receiver API.
+ * @returns {ReceiverManagerAPI} - The receiver manager API.
  */
-function getReceiverManager(config: Object): ReceiverAPI {
+export default function(config: Object): ReceiverManagerAPI {
   if (!instance) {
-    instance = new ReceiverAPI(config);
+    instance = new ReceiverManagerAPI(config);
   }
   return instance;
 }
 
-export {getReceiverManager};
 export {__VERSION__ as VERSION, __NAME__ as NAME};

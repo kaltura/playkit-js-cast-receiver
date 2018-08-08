@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <script src="//www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
-  <script src="//192.168.2.12:3001/kaltura-ovp-player.js"></script>
+  <script src="//192.168.2.3:3001/kaltura-ovp-player.js"></script>
   <script src="./playkit-cast-receiver.js"></script>
   <script src="./app.js"></script>
 </head>
 <body>
 <cast-media-player/>
 <script>
-  const app = new App({
+  KalturaPlayer.cast.receiver({
     logLevel: 'DEBUG',
     provider: {
       partnerId: 1091,
@@ -20,7 +20,8 @@
       }
     }
   });
-  app.start();
+
+  cast.framework.CastReceiverContext.getInstance().start();
 </script>
 </body>
 </html>
