@@ -19,7 +19,7 @@ if (PROD) {
   plugins.push(
     new CopyWebpackPlugin([
       {
-        from: '../demo/app.js',
+        from: '',
         to: '.'
       }
     ])
