@@ -1,6 +1,6 @@
 // @flow
 import {core} from 'kaltura-player-js';
-import {CAST_MEDIA_PLAYER_TAG} from '../player/player-loader';
+import {CAST_MEDIA_PLAYER_TAG} from './player-loader';
 
 const {Track, Utils, FakeEvent, MediaType, getLogger, FakeEventTarget, EventManager, EventType, AudioTrack, TextTrack, AbrMode, MimeType} = core;
 
@@ -83,8 +83,6 @@ class CastEngine extends FakeEventTarget {
     );
     this._eventManager.listen(videoElement, EventType.SEEKED, () => (this._seeking = false));
     this._eventManager.listen(videoElement, EventType.SEEKING, () => (this._seeking = true));
-    this._eventManager.listen(videoElement, EventType.PLAY, () => (this._paused = false));
-    this._eventManager.listen(videoElement, EventType.PAUSE, () => (this._paused = true));
     if (this.isLive()) {
       this._eventManager.listen(videoElement, EventType.TIME_UPDATE, () => this._playerManager.broadcastStatus(true));
     }
@@ -129,11 +127,11 @@ class CastEngine extends FakeEventTarget {
   }
 
   play(): void {
-    // Empty implementation
+    this._paused = false;
   }
 
   pause(): void {
-    // Empty implementation
+    this._paused = true;
   }
 
   hideTextTrack(): void {
@@ -148,9 +146,8 @@ class CastEngine extends FakeEventTarget {
     this.dispatchEvent(new FakeEvent(EventType.AUDIO_TRACK_CHANGED, {selectedAudioTrack: audioTrack}));
   }
 
-  // eslint-disable-next-line no-unused-vars
-  selectVideotTrack(videoTrack: VideoTrack): void {
-    // Empty implementation
+  selectVideoTrack(videoTrack: VideoTrack): void {
+    this.dispatchEvent(new FakeEvent(EventType.VIDEO_TRACK_CHANGED, {selectedVideoTrack: videoTrack}));
   }
 
   enableAdaptiveBitrate(): void {

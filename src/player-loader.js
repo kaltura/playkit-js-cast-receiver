@@ -1,9 +1,9 @@
 // @flow
 import {core, setup} from 'kaltura-player-js';
-import {CastEngine} from '../engine/cast-engine';
+import {CastEngine} from './cast-engine';
 import {DefaultPlayerConfig} from './default-player-config';
-import {ReceiverError} from '../error/error';
-import {ErrorType} from '../error/error-type';
+import {ReceiverError} from './error/error';
+import {ErrorType} from './error/error-type';
 
 const {Utils, unRegisterEngine, registerEngine, EngineType} = core;
 

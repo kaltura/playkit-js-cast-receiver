@@ -1,23 +1,30 @@
 // @flow
-import {cast as remote, core} from 'kaltura-player-js';
-import {PlayerLoader} from './player/player-loader';
+import {core} from 'kaltura-player-js';
+import {PlayerLoader} from './player-loader';
+import {ReceiverTracksManager} from './receiver-tracks-manager';
+import {ReceiverAdsManager} from './receiver-ads-manager';
 
-const {TextStyleConverter} = remote;
-const {FakeEvent, TrackType, EventManager, DrmScheme} = core;
+const {FakeEvent, EventManager, DrmScheme} = core;
 
 class ReceiverManager {
   _context: Object;
   _playerManager: Object;
   _eventManager: EventManager;
   _player: Object;
+  _shouldAutoPlay: boolean = true;
+  _firstPlay: boolean = true;
+  _tracksManager: ReceiverTracksManager;
+  _adsManager: ReceiverAdsManager;
 
   constructor(config: Object) {
     this._context = cast.framework.CastReceiverContext.getInstance();
     this._playerManager = this._context.getPlayerManager();
     this._eventManager = new EventManager();
-    window.player = this._player = PlayerLoader.loadPlayer(config);
-    this._attachListeners();
-    this._attachInterceptors();
+    this._player = PlayerLoader.loadPlayer(config);
+    this._tracksManager = new ReceiverTracksManager(this._player);
+    this._adsManager = new ReceiverAdsManager(this._player);
+    this._addEventListeners();
+    this._setMessageInterceptors();
   }
 
   onLoad(loadRequestData: Object): Promise<Object> {
@@ -46,21 +53,29 @@ class ReceiverManager {
         }
       }
     }
+    if (mediaStatus.playerState !== this._playerManager.getPlayerState()) {
+      mediaStatus.playerState = this._playerManager.getPlayerState();
+    }
     return mediaStatus;
   }
 
   _reset(): void {
+    this._shouldAutoPlay = true;
+    this._firstPlay = true;
     this._eventManager.removeAll();
     this._player.reset();
   }
 
   _destroy(): void {
+    this._shouldAutoPlay = true;
+    this._firstPlay = true;
     this._eventManager.destroy();
     this._player.destroy();
   }
 
   _onSourceSelected(event: FakeEvent, loadRequestData: Object, resolve: Function): void {
     const source = event.payload.selectedSource[0];
+    this._handleAutoPlay(loadRequestData);
     this._setMediaInfo(loadRequestData, source);
     this._maybeSetDrmLicenseUrl(source);
     resolve(loadRequestData);
@@ -77,6 +92,13 @@ class ReceiverManager {
     loadRequestData.media.metadata.images = [{url: this._player.config.sources.poster}];
   }
 
+  _handleAutoPlay(loadRequestData: Object): void {
+    if (!loadRequestData.autoplay) {
+      this._shouldAutoPlay = false;
+      loadRequestData.autoplay = true;
+    }
+  }
+
   _maybeSetDrmLicenseUrl(source: Object): void {
     if (source.drmData) {
       const data = source.drmData.find(data => data.scheme === DrmScheme.WIDEVINE);
@@ -90,94 +112,56 @@ class ReceiverManager {
     }
   }
 
-  _setInitialTracks(): void {
-    const mediaInfo = this._playerManager.getMediaInformation();
-    if (mediaInfo.customData) {
-      this._setInitialAudioTrack(mediaInfo.customData.audioLanguage);
-      this._setInitialTextTrack(mediaInfo.customData.textLanguage);
-    }
+  _addEventListeners(): void {
+    const eventHandlers = {
+      [cast.framework.events.EventType.PLAY]: this._onPlayEvent,
+      [cast.framework.events.EventType.PAUSE]: this._onPauseEvent,
+      [cast.framework.events.EventType.PLAYER_LOAD_COMPLETE]: this._onPlayerLoadCompleteEvent,
+      [cast.framework.events.EventType.REQUEST_EDIT_TRACKS_INFO]: this._onRequestEditTracksInfoEvent
+    };
+    Object.keys(eventHandlers).forEach(event => this._playerManager.addEventListener(event, eventHandlers[event].bind(this)));
   }
 
-  _setInitialTextTrack(textLanguage: ?string): void {
-    const textTracksManager = this._playerManager.getTextTracksManager();
-    if (textLanguage) {
-      textTracksManager.setActiveByLanguage(textLanguage);
-    }
+  _setMessageInterceptors(): void {
+    const msgHandlers = {
+      [cast.framework.messages.MessageType.LOAD]: this.onLoad,
+      [cast.framework.messages.MessageType.MEDIA_STATUS]: this.onMediaStatus,
+      [cast.framework.messages.MessageType.STOP]: this.onStop
+    };
+    Object.keys(msgHandlers).forEach(msg => this._playerManager.setMessageInterceptor(msg, msgHandlers[msg].bind(this)));
   }
 
-  _setInitialAudioTrack(audioLanguage: ?string): void {
-    const audioTracksManager = this._playerManager.getAudioTracksManager();
-    if (audioLanguage) {
-      audioTracksManager.setActiveByLanguage(audioLanguage);
-    } else {
-      const audioTracks = audioTracksManager.getTracks();
-      if (audioTracks.length > 0) {
-        const audioTrackId = audioTracks[0].trackId;
-        const audioTrack = this._player.getTracks(TrackType.AUDIO).find(t => t.id === audioTrackId);
-        if (audioTrack) {
-          audioTracksManager.setActiveById(audioTrackId);
-          this._player.selectTrack(audioTrack);
-        }
-      }
-    }
-  }
-
-  _attachListeners(): void {
-    this._playerManager.addEventListener(cast.framework.events.EventType.PLAYER_LOAD_COMPLETE, () => {
-      this._player.load();
-      this._player.ready().then(() => {
-        this._setInitialTracks();
-        if (this._player.isLive() && !this._player.isDvr()) {
-          this._player.seekToLiveEdge();
-        }
-      });
-    });
-    this._playerManager.addEventListener(cast.framework.events.EventType.REQUEST_EDIT_TRACKS_INFO, requestEvent => {
-      const activeTrackIds = requestEvent.requestData.activeTrackIds;
-      if (activeTrackIds) {
-        this._handleAudioTrackSelection(activeTrackIds);
-        this._handleTextTrackSelection(activeTrackIds);
+  _onPlayEvent(): void {
+    if (this._firstPlay) {
+      if (!this._shouldAutoPlay) {
+        this._playerManager.pause();
       } else {
-        const textTrackStyle = requestEvent.requestData.textTrackStyle;
-        this._handleTextStyleSelection(textTrackStyle);
+        this._player.play();
       }
-    });
-    this._playerManager.addEventListener(cast.framework.events.EventType.REQUEST_PLAY, () => {
-      if (this._player.isLive() && !this._player.isDvr()) {
-        this._player.seekToLiveEdge();
-      }
-    });
-  }
-
-  _handleTextTrackSelection(activeTrackIds: Array<number>): void {
-    const textTracks = this._player.getTracks(TrackType.TEXT);
-    const activeTextTrack = textTracks.find(t => t.active);
-    const nextActiveTextTrack = textTracks.find(t => activeTrackIds.includes(t.id));
-    if (nextActiveTextTrack) {
-      this._player.selectTrack(nextActiveTextTrack);
-    } else if (activeTextTrack.language !== 'off') {
-      const offTrack = textTracks.find(t => t.language === 'off');
-      this._player.selectTrack(offTrack);
+      this._firstPlay = false;
+    } else {
+      this._player.play();
     }
   }
 
-  _handleAudioTrackSelection(activeTrackIds: Array<number>): void {
-    const audioTracks = this._player.getTracks(TrackType.AUDIO);
-    const activeAudioTrack = audioTracks.find(t => t.active);
-    const nextActiveAudioTrack = audioTracks.find(t => activeTrackIds.includes(t.id));
-    if (activeAudioTrack.id !== nextActiveAudioTrack.id) {
-      this._player.selectTrack(nextActiveAudioTrack);
+  _onPauseEvent(): void {
+    this._player.pause();
+  }
+
+  _onPlayerLoadCompleteEvent(): void {
+    this._player.load();
+    this._player.ready().then(() => this._tracksManager.setInitialTracks());
+  }
+
+  _onRequestEditTracksInfoEvent(requestEvent): void {
+    const activeTrackIds = requestEvent.requestData.activeTrackIds;
+    if (activeTrackIds) {
+      this._tracksManager.handleAudioTrackSelection(activeTrackIds);
+      this._tracksManager.handleTextTrackSelection(activeTrackIds);
+    } else {
+      const textTrackStyle = requestEvent.requestData.textTrackStyle;
+      this._tracksManager.handleTextStyleSelection(textTrackStyle);
     }
-  }
-
-  _handleTextStyleSelection(textStyle: Object): void {
-    this._player.textStyle = TextStyleConverter.toPlayerTextStyle(textStyle);
-  }
-
-  _attachInterceptors(): void {
-    this._playerManager.setMessageInterceptor(cast.framework.messages.MessageType.LOAD, loadRequestData => this.onLoad(loadRequestData));
-    this._playerManager.setMessageInterceptor(cast.framework.messages.MessageType.MEDIA_STATUS, mediaStatus => this.onMediaStatus(mediaStatus));
-    this._playerManager.setMessageInterceptor(cast.framework.messages.MessageType.STOP, requestData => this.onStop(requestData));
   }
 }
 
