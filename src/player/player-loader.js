@@ -8,13 +8,14 @@ import {ErrorType} from '../error/error-type';
 const {Utils, unRegisterEngine, registerEngine, EngineType} = core;
 
 export const CAST_MEDIA_PLAYER_TAG: string = 'cast-media-player';
-const PLAYER_CONTAINER: string = 'kaltura-player-container';
+const PLAYER_CONTAINER: string = 'kaltura-receiver-player-container';
 
 class PlayerLoader {
   static loadPlayer(config: Object): Object {
     const castMediaPlayerEl = Utils.Dom.getElementsByTagName(CAST_MEDIA_PLAYER_TAG)[0];
     if (castMediaPlayerEl) {
       const castMediaElement = castMediaPlayerEl.getMediaElement();
+      castMediaElement.style.position = 'absolute';
       const playerContainerEl = Utils.Dom.createElement('div');
       playerContainerEl.id = PLAYER_CONTAINER;
       Utils.Dom.appendChild(document.body, playerContainerEl);
