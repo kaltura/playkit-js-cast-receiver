@@ -133,6 +133,9 @@ class ReceiverManager {
 
   _onPlayEvent(): void {
     if (this._firstPlay) {
+      if (this._player.isLive()) {
+        this._player.seekToLiveEdge();
+      }
       if (!this._shouldAutoPlay) {
         this._playerManager.pause();
       } else {
