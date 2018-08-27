@@ -82,14 +82,15 @@ class ReceiverManager {
   }
 
   _setMediaInfo(loadRequestData: Object, source: Object): void {
-    loadRequestData.media.contentId = source.id;
-    loadRequestData.media.contentUrl = source.url;
-    loadRequestData.media.contentType = source.mimetype;
+    loadRequestData.media.contentId = loadRequestData.media.contentId || source.id;
+    loadRequestData.media.contentUrl = loadRequestData.media.contentUrl || source.url;
+    loadRequestData.media.contentType = loadRequestData.media.contentType || source.mimetype;
     loadRequestData.media.streamType = this._player.isLive() ? cast.framework.messages.StreamType.LIVE : cast.framework.messages.StreamType.BUFFERED;
-    loadRequestData.media.metadata = new cast.framework.messages.GenericMediaMetadata();
-    loadRequestData.media.metadata.title = this._player.config.sources.metadata.name;
-    loadRequestData.media.metadata.subtitle = this._player.config.sources.metadata.description;
-    loadRequestData.media.metadata.images = [{url: this._player.config.sources.poster}];
+    loadRequestData.media.metadata = loadRequestData.media.metadata || new cast.framework.messages.GenericMediaMetadata();
+    loadRequestData.media.metadata.title = loadRequestData.media.metadata.title || this._player.config.sources.metadata.name;
+    loadRequestData.media.metadata.subtitle = loadRequestData.media.metadata.subtitle || this._player.config.sources.metadata.description;
+    loadRequestData.media.metadata.images = loadRequestData.media.metadata.images || [{url: this._player.config.sources.poster}];
+    loadRequestData.media.hlsSegmentFormat = loadRequestData.media.hlsSegmentFormat || cast.framework.messages.HlsSegmentFormat.TS;
   }
 
   _handleAutoPlay(loadRequestData: Object): void {
