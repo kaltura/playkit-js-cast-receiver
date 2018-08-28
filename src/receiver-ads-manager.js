@@ -1,12 +1,14 @@
 // @flow
-import {core} from 'kaltura-player-js';
+import {cast as remote, core} from 'kaltura-player-js';
+import {CUSTOM_CHANNEL} from './receiver-manager';
 
 const {EventType} = core;
+const {CustomAdEventMessage} = remote;
 
 class ReceiverAdsManager {
+  _context: Object;
   _playerManager: Object;
   _player: Object;
-  _ad: Object;
   _adType: ?string;
   _adBreak: boolean;
   _adPlaying: boolean;
@@ -34,7 +36,8 @@ class ReceiverAdsManager {
   };
 
   constructor(player: Object) {
-    this._playerManager = cast.framework.CastReceiverContext.getInstance().getPlayerManager();
+    this._context = cast.framework.CastReceiverContext.getInstance();
+    this._playerManager = this._context.getPlayerManager();
     this._player = player;
     Object.keys(this._adLifecycleEventHandlers).forEach(event =>
       this._playerManager.addEventListener(event, this._adLifecycleEventHandlers[event].bind(this))
@@ -46,7 +49,7 @@ class ReceiverAdsManager {
       this._playerManager.addEventListener(event, this._adTrackingEventHandlers[event].bind(this))
     );
     Object.keys(this._playerEventHandlers).forEach(event => this._player.addEventListener(event, this._playerEventHandlers[event].bind(this)));
-    this._player.dispatchEvent(this._player.Event.AD_BREAK_START);
+    this._sendEventAndCustomMessage(this._player.Event.AD_BREAK_START);
     this._adBreak = true;
     this._setAdType(breaksEvent);
   }
@@ -56,34 +59,34 @@ class ReceiverAdsManager {
       this._playerManager.removeEventListener(event, this._adTrackingEventHandlers[event].bind(this))
     );
     Object.keys(this._playerEventHandlers).forEach(event => this._player.removeEventListener(event, this._playerEventHandlers[event].bind(this)));
-    this._player.dispatchEvent(this._player.Event.AD_BREAK_END);
+    this._sendEventAndCustomMessage(this._player.Event.AD_BREAK_END);
     this._adBreak = false;
     this._adType = null;
   }
 
   _onBreakClipLoading(): void {
-    this._player.dispatchEvent(this._player.Event.AD_LOADED, {
+    this._sendEventAndCustomMessage(this._player.Event.AD_LOADED, {
       // TODO: ad loaded payload
     });
   }
 
   _onBreakClipStarted(): void {
-    this._player.dispatchEvent(this._player.Event.AD_STARTED);
+    this._sendEventAndCustomMessage(this._player.Event.AD_STARTED);
     this._adPlaying = true;
   }
 
   _onBreakClipEnded(): void {
-    this._player.dispatchEvent(this._player.Event.AD_COMPLETED);
+    this._sendEventAndCustomMessage(this._player.Event.AD_COMPLETED);
     this._adPlaying = false;
   }
 
   _onAdPaused(): void {
-    this._player.dispatchEvent(this._player.Event.AD_PAUSED);
+    this._sendEventAndCustomMessage(this._player.Event.AD_PAUSED);
     this._adPlaying = false;
   }
 
   _onAdResumed(): void {
-    this._player.dispatchEvent(this._player.Event.AD_RESUMED);
+    this._sendEventAndCustomMessage(this._player.Event.AD_RESUMED);
     this._adPlaying = true;
   }
 
@@ -93,17 +96,17 @@ class ReceiverAdsManager {
     const percent = adCurrentTime / adDuration;
     if (!this._timePercentEvent.AD_REACHED_25_PERCENT && percent >= 0.25) {
       this._timePercentEvent.AD_REACHED_25_PERCENT = true;
-      this._player.dispatchEvent(this._player.Event.AD_FIRST_QUARTILE);
+      this._sendEventAndCustomMessage(this._player.Event.AD_FIRST_QUARTILE);
     }
     if (!this._timePercentEvent.AD_REACHED_50_PERCENT && percent >= 0.5) {
       this._timePercentEvent.AD_REACHED_50_PERCENT = true;
-      this._player.dispatchEvent(this._player.Event.AD_MIDPOINT);
+      this._sendEventAndCustomMessage(this._player.Event.AD_MIDPOINT);
     }
     if (!this._timePercentEvent.AD_REACHED_75_PERCENT && percent >= 0.75) {
       this._timePercentEvent.AD_REACHED_75_PERCENT = true;
-      this._player.dispatchEvent(this._player.Event.AD_THIRD_QUARTILE);
+      this._sendEventAndCustomMessage(this._player.Event.AD_THIRD_QUARTILE);
     }
-    this._player.dispatchEvent(this._player.Event.AD_PROGRESS, {
+    this._sendEventAndCustomMessage(this._player.Event.AD_PROGRESS, {
       adProgress: {
         currentTime: adCurrentTime,
         duration: adDuration
@@ -113,12 +116,12 @@ class ReceiverAdsManager {
 
   _onMuteChange(): void {
     if (this._player.muted) {
-      this._player.dispatchEvent(this._player.Event.AD_MUTED);
+      this._sendEventAndCustomMessage(this._player.Event.AD_MUTED);
     }
   }
 
   _onVolumeChange(): void {
-    this._player.dispatchEvent(this._player.Event.AD_VOLUME_CHANGED);
+    this._sendEventAndCustomMessage(this._player.Event.AD_VOLUME_CHANGED);
   }
 
   _setAdType(breaksEvent: Object): void {
@@ -136,6 +139,11 @@ class ReceiverAdsManager {
           break;
       }
     }
+  }
+
+  _sendEventAndCustomMessage(event: string, payload: any): void {
+    this._player.dispatchEvent(event, payload);
+    this._context.sendCustomMessage(CUSTOM_CHANNEL, undefined, new CustomAdEventMessage(event, payload));
   }
 }
 

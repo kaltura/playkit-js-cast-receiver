@@ -10,7 +10,7 @@
 <body>
 <cast-media-player/>
 <script>
-  KalturaPlayer.cast.receiver({
+  var receiver = KalturaPlayer.cast.receiver({
     logLevel: 'DEBUG',
     provider: {
       partnerId: 1091,
@@ -21,7 +21,7 @@
     }
   });
 
-  cast.framework.CastReceiverContext.getInstance().start();
+  receiver.start();
 </script>
 </body>
 </html>

@@ -8,6 +8,10 @@ class ReceiverManagerAPI {
     receiverManager = new ReceiverManager(config);
   }
 
+  start(options?: Object = {}): void {
+    receiverManager.start(options);
+  }
+
   onLoad(loadRequestData: Object): Promise<Object> {
     return receiverManager.onLoad(loadRequestData);
   }

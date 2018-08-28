@@ -4,7 +4,9 @@ import {PlayerLoader} from './player-loader';
 import {ReceiverTracksManager} from './receiver-tracks-manager';
 import {ReceiverAdsManager} from './receiver-ads-manager';
 
-const {FakeEvent, EventManager, DrmScheme} = core;
+const {FakeEvent, EventManager, DrmScheme, Utils} = core;
+
+export const CUSTOM_CHANNEL = 'urn:x-cast:com.kaltura.cast.playkit';
 
 class ReceiverManager {
   _context: Object;
@@ -45,6 +47,15 @@ class ReceiverManager {
     Object.keys(this._castContextEventHandlers).forEach(event =>
       this._context.addEventListener(event, this._castContextEventHandlers[event].bind(this))
     );
+  }
+
+  start(options: Object): void {
+    const defaultOptions = new cast.framework.CastReceiverOptions();
+    defaultOptions.customNamespaces = {
+      [CUSTOM_CHANNEL]: cast.framework.system.MessageType.JSON
+    };
+    Utils.Object.mergeDeep(defaultOptions, options);
+    this._context.start(defaultOptions);
   }
 
   onLoad(loadRequestData: Object): Promise<Object> {
