@@ -15,6 +15,19 @@ class ReceiverManager {
   _firstPlay: boolean = true;
   _tracksManager: ReceiverTracksManager;
   _adsManager: ReceiverAdsManager;
+  _messageInterceptorsHandlers: {[message: string]: Function} = {
+    [cast.framework.messages.MessageType.LOAD]: this.onLoad,
+    [cast.framework.messages.MessageType.MEDIA_STATUS]: this.onMediaStatus,
+    [cast.framework.messages.MessageType.STOP]: this.onStop
+  };
+  _playerManagerEventHandlers: {[event: string]: Function} = {
+    [cast.framework.events.EventType.PLAY]: this._onPlayEvent,
+    [cast.framework.events.EventType.PAUSE]: this._onPauseEvent,
+    [cast.framework.events.EventType.PLAYER_LOAD_COMPLETE]: this._onPlayerLoadCompleteEvent
+  };
+  _castContextEventHandlers: {[event: string]: Function} = {
+    [cast.framework.system.EventType.SYSTEM_VOLUME_CHANGED]: this._onSystemVolumeChangedEvent
+  };
 
   constructor(config: Object) {
     this._context = cast.framework.CastReceiverContext.getInstance();
@@ -23,8 +36,15 @@ class ReceiverManager {
     this._player = PlayerLoader.loadPlayer(config);
     this._tracksManager = new ReceiverTracksManager(this._player);
     this._adsManager = new ReceiverAdsManager(this._player);
-    this._addEventListeners();
-    this._setMessageInterceptors();
+    Object.keys(this._playerManagerEventHandlers).forEach(event =>
+      this._playerManager.addEventListener(event, this._playerManagerEventHandlers[event].bind(this))
+    );
+    Object.keys(this._messageInterceptorsHandlers).forEach(msg =>
+      this._playerManager.setMessageInterceptor(msg, this._messageInterceptorsHandlers[msg].bind(this))
+    );
+    Object.keys(this._castContextEventHandlers).forEach(event =>
+      this._context.addEventListener(event, this._castContextEventHandlers[event].bind(this))
+    );
   }
 
   onLoad(loadRequestData: Object): Promise<Object> {
@@ -113,25 +133,6 @@ class ReceiverManager {
     }
   }
 
-  _addEventListeners(): void {
-    const eventHandlers = {
-      [cast.framework.events.EventType.PLAY]: this._onPlayEvent,
-      [cast.framework.events.EventType.PAUSE]: this._onPauseEvent,
-      [cast.framework.events.EventType.PLAYER_LOAD_COMPLETE]: this._onPlayerLoadCompleteEvent,
-      [cast.framework.events.EventType.REQUEST_EDIT_TRACKS_INFO]: this._onRequestEditTracksInfoEvent
-    };
-    Object.keys(eventHandlers).forEach(event => this._playerManager.addEventListener(event, eventHandlers[event].bind(this)));
-  }
-
-  _setMessageInterceptors(): void {
-    const msgHandlers = {
-      [cast.framework.messages.MessageType.LOAD]: this.onLoad,
-      [cast.framework.messages.MessageType.MEDIA_STATUS]: this.onMediaStatus,
-      [cast.framework.messages.MessageType.STOP]: this.onStop
-    };
-    Object.keys(msgHandlers).forEach(msg => this._playerManager.setMessageInterceptor(msg, msgHandlers[msg].bind(this)));
-  }
-
   _onPlayEvent(): void {
     if (this._firstPlay) {
       if (this._player.isLive()) {
@@ -157,14 +158,13 @@ class ReceiverManager {
     this._player.ready().then(() => this._tracksManager.setInitialTracks());
   }
 
-  _onRequestEditTracksInfoEvent(requestEvent): void {
-    const activeTrackIds = requestEvent.requestData.activeTrackIds;
-    if (activeTrackIds) {
-      this._tracksManager.handleAudioTrackSelection(activeTrackIds);
-      this._tracksManager.handleTextTrackSelection(activeTrackIds);
-    } else {
-      const textTrackStyle = requestEvent.requestData.textTrackStyle;
-      this._tracksManager.handleTextStyleSelection(textTrackStyle);
+  _onSystemVolumeChangedEvent(systemVolumeChangedEvent: Object): void {
+    const data = systemVolumeChangedEvent.data;
+    if (this._player.volume !== data.level) {
+      this._player.volume = data.level;
+    }
+    if (this._player.muted !== data.muted) {
+      this._player.muted = data.muted;
     }
   }
 }

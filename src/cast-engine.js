@@ -225,6 +225,7 @@ class CastEngine extends FakeEventTarget {
 
   set volume(value: number): void {
     this._volume = value;
+    this.dispatchEvent(EventType.VOLUME_CHANGE);
   }
 
   get volume(): number {

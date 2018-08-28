@@ -11,6 +11,7 @@ class ReceiverTracksManager {
   constructor(player: Object) {
     this._playerManager = cast.framework.CastReceiverContext.getInstance().getPlayerManager();
     this._player = player;
+    this._attachListeners();
   }
 
   setInitialTracks(): void {
@@ -21,7 +22,20 @@ class ReceiverTracksManager {
     }
   }
 
-  handleTextTrackSelection(activeTrackIds: Array<number>): void {
+  _attachListeners(): void {
+    this._playerManager.addEventListener(cast.framework.events.EventType.REQUEST_EDIT_TRACKS_INFO, requestEvent => {
+      const activeTrackIds = requestEvent.requestData.activeTrackIds;
+      if (activeTrackIds) {
+        this._handleAudioTrackSelection(activeTrackIds);
+        this._handleTextTrackSelection(activeTrackIds);
+      } else {
+        const textTrackStyle = requestEvent.requestData.textTrackStyle;
+        this._handleTextStyleSelection(textTrackStyle);
+      }
+    });
+  }
+
+  _handleTextTrackSelection(activeTrackIds: Array<number>): void {
     const textTracks = this._player.getTracks(TrackType.TEXT);
     const activeTextTrack = textTracks.find(t => t.active);
     const nextActiveTextTrack = textTracks.find(t => activeTrackIds.includes(t.id));
@@ -33,7 +47,7 @@ class ReceiverTracksManager {
     }
   }
 
-  handleAudioTrackSelection(activeTrackIds: Array<number>): void {
+  _handleAudioTrackSelection(activeTrackIds: Array<number>): void {
     const audioTracks = this._player.getTracks(TrackType.AUDIO);
     const activeAudioTrack = audioTracks.find(t => t.active);
     const nextActiveAudioTrack = audioTracks.find(t => activeTrackIds.includes(t.id));
@@ -42,7 +56,7 @@ class ReceiverTracksManager {
     }
   }
 
-  handleTextStyleSelection(textStyle: Object): void {
+  _handleTextStyleSelection(textStyle: Object): void {
     this._player.textStyle = TextStyleConverter.toPlayerTextStyle(textStyle);
   }
 
