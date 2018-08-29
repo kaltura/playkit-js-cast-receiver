@@ -1,10 +1,11 @@
 // @flow
-import {core} from 'kaltura-player-js';
+import {cast as remote, core} from 'kaltura-player-js';
 import {PlayerLoader} from './player-loader';
 import {ReceiverTracksManager} from './receiver-tracks-manager';
 import {ReceiverAdsManager} from './receiver-ads-manager';
 
 const {FakeEvent, EventManager, DrmScheme, Utils} = core;
+const {CustomMessageType, CustomActionType, CustomActionMessage} = remote;
 
 export const CUSTOM_CHANNEL = 'urn:x-cast:com.kaltura.cast.playkit';
 
@@ -38,15 +39,7 @@ class ReceiverManager {
     this._player = PlayerLoader.loadPlayer(config);
     this._tracksManager = new ReceiverTracksManager(this._player);
     this._adsManager = new ReceiverAdsManager(this._player);
-    Object.keys(this._playerManagerEventHandlers).forEach(event =>
-      this._playerManager.addEventListener(event, this._playerManagerEventHandlers[event].bind(this))
-    );
-    Object.keys(this._messageInterceptorsHandlers).forEach(msg =>
-      this._playerManager.setMessageInterceptor(msg, this._messageInterceptorsHandlers[msg].bind(this))
-    );
-    Object.keys(this._castContextEventHandlers).forEach(event =>
-      this._context.addEventListener(event, this._castContextEventHandlers[event].bind(this))
-    );
+    this._attachListeners();
   }
 
   start(options: Object): void {
@@ -88,6 +81,19 @@ class ReceiverManager {
       mediaStatus.playerState = this._playerManager.getPlayerState();
     }
     return mediaStatus;
+  }
+
+  _attachListeners(): void {
+    this._context.addCustomMessageListener(CUSTOM_CHANNEL, customMessage => this._onCustomMessage(customMessage));
+    Object.keys(this._playerManagerEventHandlers).forEach(event =>
+      this._playerManager.addEventListener(event, this._playerManagerEventHandlers[event].bind(this))
+    );
+    Object.keys(this._messageInterceptorsHandlers).forEach(msg =>
+      this._playerManager.setMessageInterceptor(msg, this._messageInterceptorsHandlers[msg].bind(this))
+    );
+    Object.keys(this._castContextEventHandlers).forEach(event =>
+      this._context.addEventListener(event, this._castContextEventHandlers[event].bind(this))
+    );
   }
 
   _reset(): void {
@@ -176,6 +182,27 @@ class ReceiverManager {
     }
     if (this._player.muted !== data.muted) {
       this._player.muted = data.muted;
+    }
+  }
+
+  _onCustomMessage(customMessageEvent: Object): void {
+    const customMessage = customMessageEvent.data;
+    switch (customMessage.type) {
+      case CustomMessageType.ACTION:
+        this._handleCustomAction(customMessage);
+        break;
+      default:
+        break;
+    }
+  }
+
+  _handleCustomAction(customAction: CustomActionMessage): void {
+    switch (customAction.action) {
+      case CustomActionType.SKIP_AD:
+        this._adsManager.skipAd();
+        break;
+      default:
+        break;
     }
   }
 }
