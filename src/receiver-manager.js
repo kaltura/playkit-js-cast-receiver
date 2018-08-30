@@ -55,6 +55,7 @@ class ReceiverManager {
     this._reset();
     return new Promise((resovle, reject) => {
       const mediaInfo = loadRequestData.media.customData.mediaInfo;
+      this._maybeReplaceAdTagCorrelator(loadRequestData.media);
       this._eventManager.listen(this._player, this._player.Event.ERROR, event => reject(event));
       this._eventManager.listen(this._player, this._player.Event.SOURCE_SELECTED, event => this._onSourceSelected(event, loadRequestData, resovle));
       this._player.loadMedia(mediaInfo);
@@ -203,6 +204,28 @@ class ReceiverManager {
         break;
       default:
         break;
+    }
+  }
+
+  _maybeReplaceAdTagCorrelator(media: Object): void {
+    const replaceCorrelator = adtag => {
+      if (adtag && regex.test(adtag)) {
+        const match = adtag.match(regex);
+        return adtag.replace(match[1], Date.now());
+      }
+      return adtag;
+    };
+    const regex = /correlator=(\[timestamp\])/;
+    if (media.breakClips) {
+      const breakClips = media.breakClips;
+      breakClips.forEach(breakClip => {
+        if (breakClip.vastAdsRequest && breakClip.vastAdsRequest.adTagUrl) {
+          breakClip.vastAdsRequest.adTagUrl = replaceCorrelator(breakClip.vastAdsRequest.adTagUrl);
+        }
+      });
+    }
+    if (media.vmapAdsRequest) {
+      media.vmapAdsRequest.adTagUrl = replaceCorrelator(media.vmapAdsRequest.adTagUrl);
     }
   }
 }
