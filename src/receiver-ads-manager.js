@@ -90,10 +90,15 @@ class ReceiverAdsManager {
     this._adBreak = adBreak;
   }
 
-  _onBreakEnded(): void {
+  _onBreakEnded(breaksEvent: Object): void {
     this._toggleAdBreakListeners(false);
     this._sendEventAndCustomMessage(this._player.Event.AD_BREAK_END);
     this._adBreak = null;
+    const breaks = this._playerManager.getBreakManager().getBreaks();
+    const index = breaks.findIndex(b => b.id === breaksEvent.breakId);
+    if (index + 1 === breaks.length) {
+      this._sendEventAndCustomMessage(this._player.Event.ALL_ADS_COMPLETED);
+    }
   }
 
   _onBreakClipLoading(breaksEvent: Object): void {
@@ -126,35 +131,34 @@ class ReceiverAdsManager {
   }
 
   _onAdProgress(): void {
-    if (this._ad) {
-      const adDuration = this._playerManager.getBreakClipDurationSec();
-      const adCurrentTime = this._playerManager.getBreakClipCurrentTimeSec();
-      const percent = adCurrentTime / adDuration;
-      if (!this._timePercentEvent.AD_REACHED_25_PERCENT && percent >= 0.25) {
-        this._timePercentEvent.AD_REACHED_25_PERCENT = true;
-        this._sendEventAndCustomMessage(this._player.Event.AD_FIRST_QUARTILE);
-      }
-      if (!this._timePercentEvent.AD_REACHED_50_PERCENT && percent >= 0.5) {
-        this._timePercentEvent.AD_REACHED_50_PERCENT = true;
-        this._sendEventAndCustomMessage(this._player.Event.AD_MIDPOINT);
-      }
-      if (!this._timePercentEvent.AD_REACHED_75_PERCENT && percent >= 0.75) {
-        this._timePercentEvent.AD_REACHED_75_PERCENT = true;
-        this._sendEventAndCustomMessage(this._player.Event.AD_THIRD_QUARTILE);
-      }
-      if (!this._adCanSkipTriggered && this._ad.skippable) {
-        if (adCurrentTime >= this._ad.skipOffset) {
-          this._sendEventAndCustomMessage(this._player.Event.AD_CAN_SKIP);
-          this._adCanSkipTriggered = true;
-        }
-      }
-      this._sendEventAndCustomMessage(this._player.Event.AD_PROGRESS, {
-        adProgress: {
-          currentTime: adCurrentTime,
-          duration: adDuration
-        }
-      });
+    if (!this._ad) return;
+    const adDuration = this._playerManager.getBreakClipDurationSec();
+    const adCurrentTime = this._playerManager.getBreakClipCurrentTimeSec();
+    const percent = adCurrentTime / adDuration;
+    if (!this._timePercentEvent.AD_REACHED_25_PERCENT && percent >= 0.25) {
+      this._timePercentEvent.AD_REACHED_25_PERCENT = true;
+      this._sendEventAndCustomMessage(this._player.Event.AD_FIRST_QUARTILE);
     }
+    if (!this._timePercentEvent.AD_REACHED_50_PERCENT && percent >= 0.5) {
+      this._timePercentEvent.AD_REACHED_50_PERCENT = true;
+      this._sendEventAndCustomMessage(this._player.Event.AD_MIDPOINT);
+    }
+    if (!this._timePercentEvent.AD_REACHED_75_PERCENT && percent >= 0.75) {
+      this._timePercentEvent.AD_REACHED_75_PERCENT = true;
+      this._sendEventAndCustomMessage(this._player.Event.AD_THIRD_QUARTILE);
+    }
+    if (!this._adCanSkipTriggered && this._ad.skippable) {
+      if (adCurrentTime >= this._ad.skipOffset) {
+        this._sendEventAndCustomMessage(this._player.Event.AD_CAN_SKIP);
+        this._adCanSkipTriggered = true;
+      }
+    }
+    this._sendEventAndCustomMessage(this._player.Event.AD_PROGRESS, {
+      adProgress: {
+        currentTime: adCurrentTime,
+        duration: adDuration
+      }
+    });
   }
 
   _onMuteChange(): void {
