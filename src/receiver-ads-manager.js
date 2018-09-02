@@ -84,8 +84,8 @@ class ReceiverAdsManager {
 
   _onBreakStarted(breaksEvent: Object): void {
     this._toggleAdBreakListeners(true);
-    const adBreak = new AdBreak();
-    this._setAdBreakData(adBreak, breaksEvent);
+    const adBreakOptions = this._getAdBreakOptions(breaksEvent);
+    const adBreak = new AdBreak(adBreakOptions);
     this._sendEventAndCustomMessage(this._player.Event.AD_BREAK_START, {adBreak: adBreak});
     this._adBreak = adBreak;
   }
@@ -102,8 +102,8 @@ class ReceiverAdsManager {
   }
 
   _onBreakClipLoading(breaksEvent: Object): void {
-    const ad = new Ad(breaksEvent.breakClipId);
-    this._setAdData(ad, breaksEvent);
+    const adOptions = this._getAdOptions(breaksEvent);
+    const ad = new Ad(breaksEvent.breakClipId, adOptions);
     this._sendEventAndCustomMessage(this._player.Event.AD_LOADED, {ad: ad});
     this._ad = ad;
   }
@@ -186,13 +186,15 @@ class ReceiverAdsManager {
     }
   }
 
-  _setAdBreakData(adBreak: AdBreak, breaksEvent: Object): void {
+  _getAdBreakOptions(breaksEvent: Object): void {
+    const options = {};
     const currentBreak = this._playerManager.getBreakManager().getBreakById(breaksEvent.breakId);
     if (currentBreak) {
-      adBreak.position = currentBreak.position;
-      adBreak.type = this._getAdBreakTypeByPosition(currentBreak.position);
-      adBreak.numAds = currentBreak.breakClipIds.length;
+      options.position = currentBreak.position;
+      options.type = this._getAdBreakTypeByPosition(currentBreak.position);
+      options.numAds = currentBreak.breakClipIds.length;
     }
+    return options;
   }
 
   _getAdBreakTypeByPosition(position: number): void {
@@ -206,18 +208,20 @@ class ReceiverAdsManager {
     }
   }
 
-  _setAdData(ad: Ad, breaksEvent: Object): void {
+  _getAdOptions(breaksEvent: Object): void {
+    const options = {};
     const currentBreak = this._playerManager.getBreakManager().getBreakById(breaksEvent.breakId);
     const currentBreakClip = this._playerManager.getBreakManager().getBreakClipById(breaksEvent.breakClipId);
-    ad.url = currentBreakClip.contentId;
-    ad.contentType = currentBreakClip.contentType;
-    ad.title = currentBreakClip.title;
-    ad.position = currentBreak.breakClipIds.indexOf(currentBreakClip.id) + 1;
-    ad.duration = currentBreakClip.duration;
-    ad.clickThroughUrl = currentBreakClip.clickThroughUrl;
-    ad.posterUrl = currentBreakClip.posterUrl;
-    ad.skipOffset = currentBreakClip.whenSkippable;
-    ad.linear = true;
+    options.url = currentBreakClip.contentId;
+    options.contentType = currentBreakClip.contentType;
+    options.title = currentBreakClip.title;
+    options.position = currentBreak.breakClipIds.indexOf(currentBreakClip.id) + 1;
+    options.duration = currentBreakClip.duration;
+    options.clickThroughUrl = currentBreakClip.clickThroughUrl;
+    options.posterUrl = currentBreakClip.posterUrl;
+    options.skipOffset = currentBreakClip.whenSkippable;
+    options.linear = true;
+    return options;
   }
 
   _sendEventAndCustomMessage(event: string, payload: any): void {
