@@ -39,6 +39,7 @@ class CastEngine extends FakeEventTarget {
   _muted: boolean = false;
   _paused: boolean = false;
   _seeking: boolean = false;
+  _ended: boolean = false;
   _mediaElementEvents: Array<string> = [
     EventType.ABORT,
     EventType.CAN_PLAY,
@@ -83,6 +84,7 @@ class CastEngine extends FakeEventTarget {
     );
     this._eventManager.listen(videoElement, EventType.SEEKED, () => (this._seeking = false));
     this._eventManager.listen(videoElement, EventType.SEEKING, () => (this._seeking = true));
+    this._eventManager.listen(videoElement, EventType.ENDED, () => (this._ended = true));
     if (this.isLive()) {
       this._eventManager.listen(videoElement, EventType.TIME_UPDATE, () => this._playerManager.broadcastStatus(true));
     }
@@ -187,6 +189,7 @@ class CastEngine extends FakeEventTarget {
     this._isLoaded = false;
     this._paused = false;
     this._seeking = false;
+    this._ended = false;
   }
 
   destroy(): void {
@@ -198,6 +201,7 @@ class CastEngine extends FakeEventTarget {
     this._muted = false;
     this._paused = false;
     this._seeking = false;
+    this._ended = false;
     if (this._el) {
       Utils.Dom.removeAttribute(this._el, 'src');
       Utils.Dom.removeChild(this._el.parentNode, this._el);
@@ -286,7 +290,13 @@ class CastEngine extends FakeEventTarget {
     // Empty implementation
   }
 
-  get crossOrigin(): ?string {}
+  get crossOrigin(): ?string {
+    // Empty implementation
+  }
+
+  get ended(): boolean {
+    return this._ended;
+  }
 
   _createVideoElement(): void {
     const castMediaPlayerEl: Object = document.getElementsByTagName(CAST_MEDIA_PLAYER_TAG)[0];
