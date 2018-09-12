@@ -69,11 +69,11 @@ class ReceiverTracksManager {
 
   _setInitialAudioTrack(audioLanguage: ?string): void {
     const audioTracksManager = this._playerManager.getAudioTracksManager();
-    if (audioLanguage) {
-      audioTracksManager.setActiveByLanguage(audioLanguage);
-    } else {
-      const audioTracks = audioTracksManager.getTracks();
-      if (audioTracks.length > 0) {
+    const audioTracks = audioTracksManager.getTracks();
+    if (audioTracks.length > 0) {
+      if (audioLanguage) {
+        audioTracksManager.setActiveByLanguage(audioLanguage);
+      } else {
         const audioTrackId = audioTracks[0].trackId;
         const audioTrack = this._player.getTracks(TrackType.AUDIO).find(t => t.id === audioTrackId);
         if (audioTrack) {
