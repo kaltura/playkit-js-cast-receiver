@@ -21,7 +21,7 @@ class PlayerLoader {
       Utils.Dom.appendChild(document.body, playerContainerEl);
       unRegisterEngine(EngineType.HTML5);
       registerEngine(EngineType.CAST, CastEngine);
-      const playerConfig = Utils.Object.mergeDeep(config, {targetId: PLAYER_CONTAINER}, DefaultPlayerConfig);
+      const playerConfig = Utils.Object.mergeDeep({targetId: PLAYER_CONTAINER}, DefaultPlayerConfig, config);
       const player = setup(playerConfig);
       Utils.Dom.prependTo(playerContainerEl, castMediaElement.parentNode);
       return player;
