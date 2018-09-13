@@ -42,6 +42,10 @@ class ReceiverManager {
     this._attachListeners();
   }
 
+  getPlayer(): Object {
+    return this._player;
+  }
+
   start(options: Object): void {
     const defaultOptions = new cast.framework.CastReceiverOptions();
     defaultOptions.customNamespaces = {

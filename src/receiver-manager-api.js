@@ -23,6 +23,14 @@ class ReceiverManagerAPI {
   onMediaStatus(mediaStatus: Object): Promise<Object> {
     return receiverManager.onMediaStatus(mediaStatus);
   }
+
+  addEventListener(type: string, listener: Function): void {
+    receiverManager.getPlayer().addEventListener(type, listener);
+  }
+
+  removeEventListener(type: string, listener: Function): void {
+    receiverManager.getPlayer().removeEventListener(type, listener);
+  }
 }
 
 export {ReceiverManagerAPI};
