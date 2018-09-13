@@ -79,15 +79,24 @@ class CastEngine extends FakeEventTarget {
 
   attach(): void {
     const videoElement = this.getVideoElement();
-    this._mediaElementEvents.forEach(mediaElementEvent =>
-      this._eventManager.listen(videoElement, mediaElementEvent, () => this.dispatchEvent(new FakeEvent(mediaElementEvent)))
-    );
     this._eventManager.listen(videoElement, EventType.SEEKED, () => (this._seeking = false));
     this._eventManager.listen(videoElement, EventType.SEEKING, () => (this._seeking = true));
-    this._eventManager.listen(videoElement, EventType.ENDED, () => (this._ended = true));
+    this._eventManager.listen(videoElement, EventType.ENDED, () => {
+      this._ended = true;
+      // Receiver has a problem where the current time isn't equals to the duration when
+      // playback is ended. This prevent from analytics plugins to report 100% reached.
+      // So we're trigger time update event again on ended and take care to handle this state also in the
+      // current time setter.
+      if (!this.isLive()) {
+        this.dispatchEvent(new FakeEvent(EventType.TIME_UPDATE));
+      }
+    });
     if (this.isLive()) {
       this._eventManager.listen(videoElement, EventType.TIME_UPDATE, () => this._playerManager.broadcastStatus(true));
     }
+    this._mediaElementEvents.forEach(mediaElementEvent =>
+      this._eventManager.listen(videoElement, mediaElementEvent, () => this.dispatchEvent(new FakeEvent(mediaElementEvent)))
+    );
   }
 
   detach(): void {
@@ -215,6 +224,9 @@ class CastEngine extends FakeEventTarget {
   get currentTime(): number {
     if (this.isLive()) {
       return this._playerManager.getCurrentTimeSec() - this.getStartTimeOfDvrWindow();
+    }
+    if (this._ended) {
+      return this._playerManager.getDurationSec();
     }
     return this._playerManager.getCurrentTimeSec();
   }
