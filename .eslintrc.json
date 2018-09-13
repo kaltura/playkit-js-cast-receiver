@@ -1,0 +1,28 @@
+{
+  "parser": "babel-eslint",
+  "extends": ["eslint:recommended", "plugin:flowtype/recommended"],
+  "plugins": ["prettier", "import", "flowtype", "mocha-no-only"],
+  "env": {
+    "browser": true,
+    "es6": true,
+    "mocha": true,
+    "amd": true,
+    "commonjs": true
+  },
+  "globals": {
+    "should": true,
+    "sinon": true,
+    "cast": true,
+    "KalturaPlayer": true,
+    "process": true,
+    "__dirname": true,
+    "__VERSION__": true,
+    "__NAME__": true
+  },
+  "rules": {
+    "prettier/prettier": "error",
+    "mocha-no-only/mocha-no-only": "off",
+    "require-jsdoc": ["error"],
+    "valid-jsdoc": ["error"]
+  }
+}
