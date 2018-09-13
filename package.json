@@ -1,5 +1,5 @@
 {
-  "name": "playkit-js-cast-receiver",
+  "name": "@playkit-js/playkit-js-cast-receiver",
   "version": "0.1.0",
   "main": "dist/playkit-cast-receiver.js",
   "scripts": {
@@ -10,10 +10,9 @@
     "watch": "webpack --progress --colors --watch",
     "test": "NODE_ENV=test karma start --color",
     "release": "standard-version",
-    "publish": "git push --follow-tags --no-verify origin master",
+    "pushTaggedRelease": "git push --follow-tags --no-verify origin master",
     "eslint": "eslint . --color",
     "flow": "flow check",
-    "commit:dist": "git add --force --all dist && (git commit -m 'chore: update dist' || exit 0)",
     "precommit": "lint-staged"
   },
   "lint-staged": {
@@ -85,11 +84,27 @@
   "peerDependencies": {
     "kaltura-player-js": "https://github.com/kaltura/kaltura-player-js.git#master"
   },
-  "keywords": [],
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "cast",
+    "google cast sdk",
+    "cast receiver",
+    "caf",
+    "kaltura",
+    "player",
+    "playkit-js",
+    "playkit-js-cast-receiver",
+    "html5 player"
+  ],
   "license": "AGPL-3.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/kaltura/playkit-js-cast-receiver.git"
+  },
+  "kcc": {
+    "name": "playkit-cast-receiver"
   },
   "bugs": {
     "url": "https://github.com/kaltura/playkit-js-cast-receiver/issues"
