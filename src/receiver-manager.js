@@ -59,6 +59,7 @@ class ReceiverManager {
     this._reset();
     return new Promise((resovle, reject) => {
       const mediaInfo = loadRequestData.media.customData.mediaInfo;
+      this._maybeCreateVmapAdsRequest(loadRequestData.media);
       this._maybeReplaceAdTagCorrelator(loadRequestData.media);
       this._eventManager.listen(this._player, this._player.Event.ERROR, event => reject(event));
       this._eventManager.listen(this._player, this._player.Event.SOURCE_SELECTED, event => this._onSourceSelected(event, loadRequestData, resovle));
@@ -208,6 +209,12 @@ class ReceiverManager {
         break;
       default:
         break;
+    }
+  }
+
+  _maybeCreateVmapAdsRequest(media: Object): Object {
+    if (media.customData && media.customData.vmapAdsRequest) {
+      media.vmapAdsRequest = media.customData.vmapAdsRequest;
     }
   }
 
