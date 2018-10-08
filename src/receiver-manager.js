@@ -14,6 +14,7 @@ class ReceiverManager {
   _playerManager: Object;
   _eventManager: EventManager;
   _player: Object;
+  _shouldSeekToLiveEdge: boolean = false;
   _shouldAutoPlay: boolean = true;
   _firstPlay: boolean = true;
   _tracksManager: ReceiverTracksManager;
@@ -60,7 +61,7 @@ class ReceiverManager {
     return new Promise((resovle, reject) => {
       const mediaInfo = loadRequestData.media.customData.mediaInfo;
       this._maybeCreateVmapAdsRequest(loadRequestData.media);
-      this._maybeReplaceAdTagCorrelator(loadRequestData.media);
+      this._maybeReplaceAdTagTimestamp(loadRequestData.media);
       this._eventManager.listen(this._player, this._player.Event.ERROR, event => reject(event));
       this._eventManager.listen(this._player, this._player.Event.SOURCE_SELECTED, event => this._onSourceSelected(event, loadRequestData, resovle));
       this._player.loadMedia(mediaInfo);
@@ -105,6 +106,7 @@ class ReceiverManager {
   _reset(): void {
     this._shouldAutoPlay = true;
     this._firstPlay = true;
+    this._shouldSeekToLiveEdge = false;
     this._eventManager.removeAll();
     this._player.reset();
   }
@@ -119,6 +121,7 @@ class ReceiverManager {
   _onSourceSelected(event: FakeEvent, loadRequestData: Object, resolve: Function): void {
     const source = event.payload.selectedSource[0];
     this._handleAutoPlay(loadRequestData);
+    this._handleLive(loadRequestData);
     this._setMediaInfo(loadRequestData, source);
     this._maybeSetDrmLicenseUrl(source);
     resolve(loadRequestData);
@@ -143,6 +146,14 @@ class ReceiverManager {
     }
   }
 
+  _handleLive(loadRequestData: Object): void {
+    if (this._player.isLive()) {
+      if (loadRequestData.currentTime === 0) {
+        this._shouldSeekToLiveEdge = true;
+      }
+    }
+  }
+
   _maybeSetDrmLicenseUrl(source: Object): void {
     if (source.drmData) {
       const data = source.drmData.find(data => data.scheme === DrmScheme.WIDEVINE);
@@ -159,7 +170,9 @@ class ReceiverManager {
   _onPlayEvent(): void {
     if (this._firstPlay) {
       if (this._player.isLive()) {
-        this._player.seekToLiveEdge();
+        if (!this._player.isDvr() || this._shouldSeekToLiveEdge) {
+          this._player.seekToLiveEdge();
+        }
       }
       if (!this._shouldAutoPlay) {
         this._playerManager.pause();
@@ -218,8 +231,8 @@ class ReceiverManager {
     }
   }
 
-  _maybeReplaceAdTagCorrelator(media: Object): void {
-    const replaceCorrelator = adtag => {
+  _maybeReplaceAdTagTimestamp(media: Object): void {
+    const replaceTimestamp = adtag => {
       if (adtag && regex.test(adtag)) {
         const match = adtag.match(regex);
         return adtag.replace(match[1], Date.now());
@@ -231,12 +244,12 @@ class ReceiverManager {
       const breakClips = media.breakClips;
       breakClips.forEach(breakClip => {
         if (breakClip.vastAdsRequest && breakClip.vastAdsRequest.adTagUrl) {
-          breakClip.vastAdsRequest.adTagUrl = replaceCorrelator(breakClip.vastAdsRequest.adTagUrl);
+          breakClip.vastAdsRequest.adTagUrl = replaceTimestamp(breakClip.vastAdsRequest.adTagUrl);
         }
       });
     }
     if (media.vmapAdsRequest) {
-      media.vmapAdsRequest.adTagUrl = replaceCorrelator(media.vmapAdsRequest.adTagUrl);
+      media.vmapAdsRequest.adTagUrl = replaceTimestamp(media.vmapAdsRequest.adTagUrl);
     }
   }
 }
