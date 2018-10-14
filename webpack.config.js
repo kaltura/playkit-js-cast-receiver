@@ -36,7 +36,6 @@ module.exports = {
     filename: '[name].js',
     library: ['KalturaPlayer', 'cast', 'receiver'],
     libraryTarget: 'umd',
-    libraryExport: 'default',
     umdNamedDefine: true,
     devtoolModuleFilenameTemplate: './cast/receiver/[resource-path]'
   },
