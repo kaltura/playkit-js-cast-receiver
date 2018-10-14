@@ -4,12 +4,14 @@ import {PlayerLoader} from './player-loader';
 import {ReceiverTracksManager} from './receiver-tracks-manager';
 import {ReceiverAdsManager} from './receiver-ads-manager';
 
-const {FakeEvent, EventManager, DrmScheme, Utils} = core;
+const {FakeEvent, EventManager, DrmScheme, Utils, getLogger} = core;
 const {CustomMessageType, CustomActionType, CustomActionMessage} = remote;
 
 export const CUSTOM_CHANNEL = 'urn:x-cast:com.kaltura.cast.playkit';
+const LIVE_EDGE = -1;
 
 class ReceiverManager {
+  _logger: any = getLogger('ReceiverManager');
   _context: Object;
   _playerManager: Object;
   _eventManager: EventManager;
@@ -53,10 +55,12 @@ class ReceiverManager {
       [CUSTOM_CHANNEL]: cast.framework.system.MessageType.JSON
     };
     Utils.Object.mergeDeep(defaultOptions, options);
+    this._logger.debug('Start receiver', defaultOptions);
     this._context.start(defaultOptions);
   }
 
   onLoad(loadRequestData: Object): Promise<Object> {
+    this._logger.debug('onLoad', loadRequestData);
     this._reset();
     return new Promise((resovle, reject) => {
       const mediaInfo = loadRequestData.media.customData.mediaInfo;
@@ -69,15 +73,19 @@ class ReceiverManager {
   }
 
   onStop(requestData: Object): Promise<Object> {
+    this._logger.debug('onStop', requestData);
     this._destroy();
     return requestData;
   }
 
   onMediaStatus(mediaStatus: Object): Promise<Object> {
+    this._logger.debug('mediaStatus', mediaStatus);
     mediaStatus.customData = mediaStatus.customData || {};
     if (this._player) {
       mediaStatus.customData.mediaInfo = this._player.getMediaInfo();
       if (this._player.isLive()) {
+        // Workaround to avoid Live & Dvr seek issue
+        mediaStatus.supportedMediaCommands -= cast.framework.messages.Command.SEEK;
         mediaStatus.currentTime = this._player.currentTime;
         if (mediaStatus.media) {
           mediaStatus.media.duration = this._player.duration;
@@ -137,6 +145,7 @@ class ReceiverManager {
     loadRequestData.media.metadata.subtitle = loadRequestData.media.metadata.subtitle || this._player.config.sources.metadata.description;
     loadRequestData.media.metadata.images = loadRequestData.media.metadata.images || [{url: this._player.config.sources.poster}];
     loadRequestData.media.hlsSegmentFormat = loadRequestData.media.hlsSegmentFormat || cast.framework.messages.HlsSegmentFormat.TS;
+    this._logger.debug('Media info has been set', loadRequestData);
   }
 
   _handleAutoPlay(loadRequestData: Object): void {
@@ -148,9 +157,10 @@ class ReceiverManager {
 
   _handleLive(loadRequestData: Object): void {
     if (this._player.isLive()) {
-      if (loadRequestData.currentTime === 0) {
+      if (!this._player.isDvr() || loadRequestData.currentTime === LIVE_EDGE) {
         this._shouldSeekToLiveEdge = true;
       }
+      this._logger.debug(`Live will seek to live edge? ${this._shouldSeekToLiveEdge}`);
     }
   }
 
@@ -161,6 +171,7 @@ class ReceiverManager {
         this._playerManager.setMediaPlaybackInfoHandler((loadRequest, playbackConfig) => {
           playbackConfig.protectionSystem = cast.framework.ContentProtection.WIDEVINE;
           playbackConfig.licenseUrl = data.licenseUrl;
+          this._logger.debug(`Set drm license url`, playbackConfig);
           return playbackConfig;
         });
       }
@@ -169,10 +180,8 @@ class ReceiverManager {
 
   _onPlayEvent(): void {
     if (this._firstPlay) {
-      if (this._player.isLive()) {
-        if (!this._player.isDvr() || this._shouldSeekToLiveEdge) {
-          this._player.seekToLiveEdge();
-        }
+      if (this._player.isLive() && this._shouldSeekToLiveEdge) {
+        this._player.seekToLiveEdge();
       }
       if (!this._shouldAutoPlay) {
         this._playerManager.pause();
@@ -206,6 +215,7 @@ class ReceiverManager {
 
   _onCustomMessage(customMessageEvent: Object): void {
     const customMessage = customMessageEvent.data;
+    this._logger.debug('Custom message received', customMessage);
     switch (customMessage.type) {
       case CustomMessageType.ACTION:
         this._handleCustomAction(customMessage);
