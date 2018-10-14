@@ -2,9 +2,10 @@
 import {cast as remote, core} from 'kaltura-player-js';
 
 const {TextStyleConverter} = remote;
-const {TrackType} = core;
+const {TrackType, getLogger} = core;
 
 class ReceiverTracksManager {
+  _logger: any = getLogger('ReceiverTracksManager');
   _playerManager: Object;
   _player: Object;
 
@@ -16,6 +17,7 @@ class ReceiverTracksManager {
 
   setInitialTracks(): void {
     const mediaInfo = this._playerManager.getMediaInformation();
+    this._logger.debug('Set initial tracks', mediaInfo.customData);
     if (mediaInfo.customData) {
       this._setInitialAudioTrack(mediaInfo.customData.audioLanguage);
       this._setInitialTextTrack(mediaInfo.customData.textLanguage);
@@ -63,6 +65,7 @@ class ReceiverTracksManager {
   _setInitialTextTrack(textLanguage: ?string): void {
     const textTracksManager = this._playerManager.getTextTracksManager();
     if (textLanguage) {
+      this._logger.debug('Set initial text track - setActiveByLanguage', textLanguage);
       textTracksManager.setActiveByLanguage(textLanguage);
     }
   }
@@ -70,13 +73,16 @@ class ReceiverTracksManager {
   _setInitialAudioTrack(audioLanguage: ?string): void {
     const audioTracksManager = this._playerManager.getAudioTracksManager();
     const audioTracks = audioTracksManager.getTracks();
+    this._logger.debug('Set initial audio track', audioLanguage, audioTracks);
     if (audioTracks.length > 0) {
       if (audioLanguage) {
+        this._logger.debug('Set initial audio track - setActiveByLanguage', audioLanguage);
         audioTracksManager.setActiveByLanguage(audioLanguage);
       } else {
         const audioTrackId = audioTracks[0].trackId;
         const audioTrack = this._player.getTracks(TrackType.AUDIO).find(t => t.id === audioTrackId);
         if (audioTrack) {
+          this._logger.debug('Set initial audio track - setActiveById', audioTrackId);
           audioTracksManager.setActiveById(audioTrackId);
           this._player.selectTrack(audioTrack);
         }
