@@ -10,10 +10,11 @@
     "watch": "webpack --progress --colors --watch",
     "test": "NODE_ENV=test karma start --color",
     "release": "standard-version",
-    "pushTaggedRelease": "git push --follow-tags --no-verify origin master",
+    "publish": "git push --follow-tags --no-verify origin master",
     "eslint": "eslint . --color",
     "flow": "flow check",
-    "precommit": "lint-staged"
+    "precommit": "lint-staged",
+    "commit:dist": "git add --force --all dist && (git commit -m 'chore: update dist' || exit 0)"
   },
   "lint-staged": {
     "*.{js,jsx}": [
