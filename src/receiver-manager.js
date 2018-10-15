@@ -27,8 +27,8 @@ class ReceiverManager {
     [cast.framework.messages.MessageType.STOP]: this.onStop
   };
   _playerManagerEventHandlers: {[event: string]: Function} = {
-    [cast.framework.events.EventType.PLAY]: this._onPlayEvent,
-    [cast.framework.events.EventType.PAUSE]: this._onPauseEvent,
+    [cast.framework.events.EventType.REQUEST_PLAY]: this._onPlayEvent,
+    [cast.framework.events.EventType.REQUEST_PAUSE]: this._onPauseEvent,
     [cast.framework.events.EventType.PLAYER_LOAD_COMPLETE]: this._onPlayerLoadCompleteEvent
   };
   _castContextEventHandlers: {[event: string]: Function} = {
@@ -129,7 +129,7 @@ class ReceiverManager {
   _onSourceSelected(event: FakeEvent, loadRequestData: Object, resolve: Function): void {
     const source = event.payload.selectedSource[0];
     this._handleAutoPlay(loadRequestData);
-    this._handleLive(loadRequestData);
+    this._handleLiveDvr(loadRequestData);
     this._setMediaInfo(loadRequestData, source);
     this._maybeSetDrmLicenseUrl(source);
     resolve(loadRequestData);
@@ -155,12 +155,10 @@ class ReceiverManager {
     }
   }
 
-  _handleLive(loadRequestData: Object): void {
-    if (this._player.isLive()) {
-      if (!this._player.isDvr() || loadRequestData.currentTime === LIVE_EDGE) {
-        this._shouldSeekToLiveEdge = true;
-      }
-      this._logger.debug(`Live will seek to live edge? ${this._shouldSeekToLiveEdge}`);
+  _handleLiveDvr(loadRequestData: Object): void {
+    if (this._player.isDvr() && loadRequestData.currentTime === LIVE_EDGE) {
+      this._shouldSeekToLiveEdge = true;
+      this._logger.debug(`Live DVR will seek to live edge? ${this._shouldSeekToLiveEdge}`);
     }
   }
 
@@ -180,7 +178,7 @@ class ReceiverManager {
 
   _onPlayEvent(): void {
     if (this._firstPlay) {
-      if (this._player.isLive() && this._shouldSeekToLiveEdge) {
+      if (this._shouldSeekToLiveEdge) {
         this._player.seekToLiveEdge();
       }
       if (!this._shouldAutoPlay) {
