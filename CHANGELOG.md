@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.1.1"></a>
+## [0.1.1](https://github.com/kaltura/playkit-js-cast-receiver/compare/v0.1.0...v0.1.1) (2018-10-15)
+
+
+### Bug Fixes
+
+* **FEC-8579:** endless seeking in live stream ([#4](https://github.com/kaltura/playkit-js-cast-receiver/issues/4)) ([2db61df](https://github.com/kaltura/playkit-js-cast-receiver/commit/2db61df))
+
+
+
 <a name="0.1.0"></a>
 # 0.1.0 (2018-10-14)
 
