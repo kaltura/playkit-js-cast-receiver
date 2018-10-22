@@ -160,6 +160,8 @@ class ReceiverManager {
       }
       // Workaround to avoid Live & Dvr seek issue
       this._playerManager.removeSupportedMediaCommands(cast.framework.messages.Command.SEEK);
+    } else if (!this._player.isLive()) {
+      this._playerManager.addSupportedMediaCommands(cast.framework.messages.Command.SEEK);
     }
   }
 
