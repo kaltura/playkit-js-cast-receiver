@@ -55,8 +55,6 @@ class ReceiverManager {
       [CUSTOM_CHANNEL]: cast.framework.system.MessageType.JSON
     };
     Utils.Object.mergeDeep(defaultOptions, options);
-    // Workaround to avoid Live & Dvr seek issue
-    this._playerManager.removeSupportedMediaCommands(cast.framework.messages.Command.SEEK);
     this._logger.debug('Start receiver', defaultOptions);
     this._context.start(defaultOptions);
   }
@@ -155,9 +153,15 @@ class ReceiverManager {
   }
 
   _handleLiveDvr(loadRequestData: Object): void {
-    if (this._player.isDvr() && loadRequestData.currentTime === LIVE_EDGE) {
-      loadRequestData.currentTime = null;
-      this._logger.debug(`Live DVR will seek to live edge`);
+    if (this._player.isDvr()) {
+      if (loadRequestData.currentTime === LIVE_EDGE) {
+        loadRequestData.currentTime = null;
+        this._logger.debug(`Live DVR will seek to live edge`);
+      }
+      // Workaround to avoid Live & Dvr seek issue
+      this._playerManager.removeSupportedMediaCommands(cast.framework.messages.Command.SEEK);
+    } else if (!this._player.isLive()) {
+      this._playerManager.addSupportedMediaCommands(cast.framework.messages.Command.SEEK);
     }
   }
 
