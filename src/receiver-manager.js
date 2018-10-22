@@ -16,7 +16,6 @@ class ReceiverManager {
   _playerManager: Object;
   _eventManager: EventManager;
   _player: Object;
-  _shouldSeekToLiveEdge: boolean = false;
   _shouldAutoPlay: boolean = true;
   _firstPlay: boolean = true;
   _tracksManager: ReceiverTracksManager;
@@ -27,8 +26,9 @@ class ReceiverManager {
     [cast.framework.messages.MessageType.STOP]: this.onStop
   };
   _playerManagerEventHandlers: {[event: string]: Function} = {
-    [cast.framework.events.EventType.REQUEST_PLAY]: this._onPlayEvent,
-    [cast.framework.events.EventType.REQUEST_PAUSE]: this._onPauseEvent,
+    [cast.framework.events.EventType.REQUEST_PLAY]: this._onRequestPlayEvent,
+    [cast.framework.events.EventType.REQUEST_PAUSE]: this._onRequestPauseEvent,
+    [cast.framework.events.EventType.PLAY]: this._onPlayEvent,
     [cast.framework.events.EventType.PLAYER_LOAD_COMPLETE]: this._onPlayerLoadCompleteEvent
   };
   _castContextEventHandlers: {[event: string]: Function} = {
@@ -55,6 +55,8 @@ class ReceiverManager {
       [CUSTOM_CHANNEL]: cast.framework.system.MessageType.JSON
     };
     Utils.Object.mergeDeep(defaultOptions, options);
+    // Workaround to avoid Live & Dvr seek issue
+    this._playerManager.removeSupportedMediaCommands(cast.framework.messages.Command.SEEK);
     this._logger.debug('Start receiver', defaultOptions);
     this._context.start(defaultOptions);
   }
@@ -84,8 +86,6 @@ class ReceiverManager {
     if (this._player) {
       mediaStatus.customData.mediaInfo = this._player.getMediaInfo();
       if (this._player.isLive()) {
-        // Workaround to avoid Live & Dvr seek issue
-        mediaStatus.supportedMediaCommands -= cast.framework.messages.Command.SEEK;
         mediaStatus.currentTime = this._player.currentTime;
         if (mediaStatus.media) {
           mediaStatus.media.duration = this._player.duration;
@@ -114,7 +114,6 @@ class ReceiverManager {
   _reset(): void {
     this._shouldAutoPlay = true;
     this._firstPlay = true;
-    this._shouldSeekToLiveEdge = false;
     this._eventManager.removeAll();
     this._player.reset();
   }
@@ -157,8 +156,8 @@ class ReceiverManager {
 
   _handleLiveDvr(loadRequestData: Object): void {
     if (this._player.isDvr() && loadRequestData.currentTime === LIVE_EDGE) {
-      this._shouldSeekToLiveEdge = true;
-      this._logger.debug(`Live DVR will seek to live edge? ${this._shouldSeekToLiveEdge}`);
+      loadRequestData.currentTime = null;
+      this._logger.debug(`Live DVR will seek to live edge`);
     }
   }
 
@@ -177,22 +176,24 @@ class ReceiverManager {
   }
 
   _onPlayEvent(): void {
+    this._logger.debug('Play event', {firstPlay: this._firstPlay});
     if (this._firstPlay) {
-      if (this._shouldSeekToLiveEdge) {
-        this._player.seekToLiveEdge();
-      }
-      if (!this._shouldAutoPlay) {
-        this._playerManager.pause();
-      } else {
+      if (this._shouldAutoPlay) {
         this._player.play();
+      } else {
+        this._playerManager.pause();
       }
       this._firstPlay = false;
-    } else {
-      this._player.play();
     }
   }
 
-  _onPauseEvent(): void {
+  _onRequestPlayEvent(): void {
+    this._logger.debug('Request play event');
+    this._player.play();
+  }
+
+  _onRequestPauseEvent(): void {
+    this._logger.debug('Request pause event');
     this._player.pause();
   }
 
