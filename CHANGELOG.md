@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.1.2"></a>
+## [0.1.2](https://github.com/kaltura/playkit-js-cast-receiver/compare/v0.1.1...v0.1.2) (2018-10-23)
+
+
+### Bug Fixes
+
+* **FEC-8552:** when seeking a video by dragging the scrubber, the scrubber jumps back before it reaches the seek point ([#6](https://github.com/kaltura/playkit-js-cast-receiver/issues/6)) ([be358b4](https://github.com/kaltura/playkit-js-cast-receiver/commit/be358b4))
+* **FEC-8610:** when casting DVR it start from the beginning ([#5](https://github.com/kaltura/playkit-js-cast-receiver/issues/5)) ([e5df0cf](https://github.com/kaltura/playkit-js-cast-receiver/commit/e5df0cf))
+
+
+
 <a name="0.1.1"></a>
 ## [0.1.1](https://github.com/kaltura/playkit-js-cast-receiver/compare/v0.1.0...v0.1.1) (2018-10-15)
 
