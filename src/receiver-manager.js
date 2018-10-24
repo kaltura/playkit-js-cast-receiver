@@ -155,7 +155,7 @@ class ReceiverManager {
   _handleLiveDvr(loadRequestData: Object): void {
     if (this._player.isDvr()) {
       if (loadRequestData.currentTime === LIVE_EDGE) {
-        loadRequestData.currentTime = null;
+        delete loadRequestData.currentTime;
         this._logger.debug(`Live DVR will seek to live edge`);
       }
       // Workaround to avoid Live & Dvr seek issue
