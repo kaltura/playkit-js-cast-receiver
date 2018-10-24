@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.1.3"></a>
+## [0.1.3](https://github.com/kaltura/playkit-js-cast-receiver/compare/v0.1.2...v0.1.3) (2018-10-24)
+
+
+### Bug Fixes
+
+* **FEC-8610:** set currentTime to null isn't seek the stream to the live edge ([#7](https://github.com/kaltura/playkit-js-cast-receiver/issues/7)) ([e642c46](https://github.com/kaltura/playkit-js-cast-receiver/commit/e642c46))
+
+
+
 <a name="0.1.2"></a>
 ## [0.1.2](https://github.com/kaltura/playkit-js-cast-receiver/compare/v0.1.1...v0.1.2) (2018-10-23)
 
