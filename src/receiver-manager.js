@@ -202,8 +202,20 @@ class ReceiverManager {
   }
 
   _onPlayerLoadCompleteEvent(): void {
-    this._player.load();
-    this._player.ready().then(() => this._tracksManager.setInitialTracks());
+    const loadPlayerAndSetInitialTracks = () => {
+      this._logger.debug('Load player and set initial tracks');
+      this._player.load();
+      this._player.ready().then(() => this._tracksManager.setInitialTracks());
+    };
+    this._logger.debug('Player load complete');
+    if (this._adsManager.adBreak()) {
+      this._logger.debug('Ad break - load player and set initial tracks later');
+      this._eventManager.listenOnce(this._player, this._player.Event.AD_BREAK_END, () => {
+        this._eventManager.listenOnce(this._player, this._player.Event.PLAYING, loadPlayerAndSetInitialTracks);
+      });
+    } else {
+      loadPlayerAndSetInitialTracks();
+    }
   }
 
   _onSystemVolumeChangedEvent(systemVolumeChangedEvent: Object): void {

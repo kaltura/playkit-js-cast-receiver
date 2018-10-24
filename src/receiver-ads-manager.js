@@ -2,7 +2,7 @@
 import {cast as remote, core} from 'kaltura-player-js';
 import {CUSTOM_CHANNEL} from './receiver-manager';
 
-const {EventType, Ad, AdBreak, AdBreakType, getLogger} = core;
+const {EventType, Ad, AdBreak, AdBreakType, getLogger, FakeEvent} = core;
 const {CustomEventMessage} = remote;
 
 class ReceiverAdsManager {
@@ -36,6 +36,10 @@ class ReceiverAdsManager {
     this._logger.debug('Skip ad');
     const requestData = new cast.framework.messages.RequestData(cast.framework.messages.MessageType.SKIP_AD);
     this._playerManager.sendLocalMediaRequest(requestData);
+  }
+
+  adBreak(): boolean {
+    return !!this._adBreak;
   }
 
   _bindMethods(): void {
@@ -228,7 +232,7 @@ class ReceiverAdsManager {
 
   _sendEventAndCustomMessage(event: string, payload: any): void {
     this._logger.debug(event.toUpperCase(), payload);
-    this._player.dispatchEvent(event, payload);
+    this._player.dispatchEvent(new FakeEvent(event, payload));
     this._context.sendCustomMessage(CUSTOM_CHANNEL, undefined, new CustomEventMessage(event, payload));
   }
 }
