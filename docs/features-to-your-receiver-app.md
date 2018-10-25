@@ -48,7 +48,7 @@ receiver.start();
 </html>
 ```
 
-> Important notice: you must return the `receiver.onLoad` default handler from this function with the manipulated data, unless it won't work!
+> **Important**: you must return the `receiver.onLoad` default handler from this function with the manipulated data, unless it won't work!
 
 ### Manage Stream Priority
 
@@ -90,7 +90,7 @@ var receiver = new KalturaPlayer.cast.receiver.Receiver(conf);
 receiver.start();
 ```
 
-> Important notice: the defined engine must be "cast" (using that string or the enum above) and not "html5", since this is the engine that plays in the receiver.
+> **Important**: the defined engine must be "cast" (using that string or the enum above) and not "html5", since this is the engine that plays in the receiver.
 
 ### Redirect Your Streams
 
