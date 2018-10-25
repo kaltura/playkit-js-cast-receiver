@@ -1,5 +1,11 @@
 # Add Features to Your Receiver App
 
+- **Table of Contents**
+  - [Intercept the Load Request](#intercept-the-load-request)
+  - [Manage Stream Priority](#manage-stream-priority)
+  - [Redirect Your Streams](#redirect-your-streams)
+  - [Set Your Own Splash Image](#set-your-own-splash-image)
+
 ### Intercept the Load Request
 
 In case you want to make some manipulations on the data that was sent by the sender, you can set a message interceptor, manipulate the data and return it to the receiver default load handler.
