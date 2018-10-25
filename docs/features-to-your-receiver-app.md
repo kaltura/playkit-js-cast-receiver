@@ -94,4 +94,60 @@ receiver.start();
 
 ### Redirect Your Streams
 
+If your are hosting your streams at third party and not at Kaltura platform, you'll need the receiver to handle the redirecting logic. To do so, configure it to force redirect to external streams.
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <script src="//www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
+  <script src="//www.kaltura.com/p/{YOUR_PARTNER_ID}/sp/{YOUR_PARTNER_ID}00/embedPlaykitJs/uiconf_id/{UI_CONF_ID}/partner_id/{YOUR_PARTNER_ID}"></script>
+</head>
+<body>
+<cast-media-player/>
+<script>
+var conf = {
+  provider: {
+    partnerId: {YOUR_PARTNER_ID}
+  },
+  sources: {
+    options: {
+      forceRedirectExternalStreams: true
+    }
+  }
+};
+var receiver = new KalturaPlayer.cast.receiver.Receiver(conf);
+receiver.start();
+```
+
 ### Set Your Own Splash Image
+
+To display your own custom splash image in the receiver, you can override the built-in `--splash-image` CSS property.
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <script src="//www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
+  <script src="//www.kaltura.com/p/{YOUR_PARTNER_ID}/sp/{YOUR_PARTNER_ID}00/embedPlaykitJs/uiconf_id/{UI_CONF_ID}/partner_id/{YOUR_PARTNER_ID}"></script>
+  <style>
+  #player {
+    --splash-image: url('http://some/image.png');
+  }
+  </style>
+</head>
+<body>
+<cast-media-player id="player"/>
+<script>
+var conf = {
+  provider: {
+    partnerId: {YOUR_PARTNER_ID}
+  }
+};
+var receiver = new KalturaPlayer.cast.receiver.Receiver(conf);
+receiver.start();
+```
+
+> For more various styling options of the receiver UI, you can look for **Styling the player** section in this [Google CAF doc](https://developers.google.com/cast/docs/caf_receiver_features).
