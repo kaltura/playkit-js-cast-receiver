@@ -18,6 +18,6 @@ Go to [Create a basic receiver app](./docs/create-basic-receiver-app.md).
 
 ## Documentation
 
-- Configuration
-- API
-- Guides
+- [Configuration](./docs/configuration.md)
+- [API](./docs/api.md)
+- [Guides](./docs/guides.md)

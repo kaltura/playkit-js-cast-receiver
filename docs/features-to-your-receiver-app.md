@@ -1,10 +1,11 @@
 # Add Features to Your Receiver App
 
-- **Table of Contents**
-  - [Intercept the Load Request](#intercept-the-load-request)
-  - [Manage Stream Priority](#manage-stream-priority)
-  - [Redirect Your Streams](#redirect-your-streams)
-  - [Set Your Own Splash Image](#set-your-own-splash-image)
+####Table of Contents
+
+- [Intercept the Load Request](#intercept-the-load-request)
+- [Manage Stream Priority](#manage-stream-priority)
+- [Redirect Your Streams](#redirect-your-streams)
+- [Set Your Own Splash Image](#set-your-own-splash-image)
 
 ### Intercept the Load Request
 
