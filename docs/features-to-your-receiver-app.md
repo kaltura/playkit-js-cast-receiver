@@ -1,6 +1,6 @@
 # Add Features to Your Receiver App
 
-#### Intercept the Load Request
+### Intercept the Load Request
 
 In case you want to make some manipulations on the data that was sent by the sender, you can set a message interceptor, manipulate the data and return it to the receiver default load handler.
 
@@ -22,27 +22,22 @@ var conf = {
 };
 // Receiver player
 var receiver = new KalturaPlayer.cast.receiver.Receiver(conf);
-
 // Google cast player manager
 var playerManager = cast.framework.CastReceiverContext.getInstance().getPlayerManager();
-
 // Set the load interceptor
 playerManager.setMessageInterceptor(cast.framework.messages.MessageType.LOAD, requestData => {
-
   // Intercept google home request and translate it to media ID
   var mediaID = requestData.media.entity.split("/").pop();
   if (!mediaID && mediaID.length === 0){
     var trimmedURL = requestData.media.entity.replace(/^[\/]+|[\/]+$/g, "");
     mediaID = trimmedURL.split("/").pop();
   }
-
   // Set the media ID in the receiver custom data
   requestData.media.customData = requestData.media.customData || {};
   requestData.media.customData.mediaInfo = {
     entryId: mediaID,
     formats:["Web New"]
   };
-
   // Must return the manipulated data to the receiver default load handler!
   return receiver.onLoad(requestData);
 });
@@ -52,6 +47,8 @@ receiver.start();
 </body>
 </html>
 ```
+
+> Important notice: you must return the `receiver.onLoad` default handler from this function with the manipulated data, unless it won't work!
 
 #### Manage Stream Priority
 
