@@ -1,6 +1,6 @@
 # Add Features to Your Receiver App
 
-#### Table of Contents
+### Table of Contents
 
 - [Intercept the Load Request](#intercept-the-load-request)
 - [Manage Stream Priority](#manage-stream-priority)
