@@ -67,13 +67,13 @@ The Kaltura Receiver SDK allows you to choose what stream protocol you are prefe
 <script>
 var conf = {
   provider: {
-    partnerId: {YOUR_PARTNER_ID},
-    },
+    partnerId: {YOUR_PARTNER_ID}
+  },
   playback: {
     streamPriority: [
       {
-       engine: KalturaPlayer.core.EngineType.CAST,
-       format: KalturaPlayer.core.StreamType.DASH
+        engine: KalturaPlayer.core.EngineType.CAST,
+        format: KalturaPlayer.core.StreamType.DASH
       },
       {
         engine: KalturaPlayer.core.EngineType.CAST,
@@ -83,10 +83,10 @@ var conf = {
         engine: KalturaPlayer.core.EngineType.CAST,
         format: KalturaPlayer.core.StreamType.PROGRESSIVE
       }
-     ]
-   }
- }
+    ]
+  }
 };
+var receiver = new KalturaPlayer.cast.receiver.Receiver(conf);
 receiver.start();
 ```
 

@@ -9,16 +9,27 @@
 <body>
 <cast-media-player/>
 <script>
-  var receiver = new KalturaPlayer.cast.receiver.Receiver({
-    logLevel: 'DEBUG',
+  var conf = {
     provider: {
-      partnerId: 1091,
-      env: {
-        cdnUrl: 'http://qa-apache-php7.dev.kaltura.com/',
-        serviceUrl: 'http://qa-apache-php7.dev.kaltura.com/api_v3'
-      }
+      partnerId: {YOUR_PARTNER_ID}
+    },
+    playback: {
+      streamPriority: [
+        {
+          engine: KalturaPlayer.core.EngineType.CAST,
+          format: KalturaPlayer.core.StreamType.DASH
+        },
+        {
+          engine: KalturaPlayer.core.EngineType.CAST,
+          format: KalturaPlayer.core.StreamType.HLS
+        },
+        {
+          engine: KalturaPlayer.core.EngineType.CAST,
+          format: KalturaPlayer.core.StreamType.PROGRESSIVE
+        }
+      ]
     }
-  });
+  };
 
   receiver.start();
 </script>
