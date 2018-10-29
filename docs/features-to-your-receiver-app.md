@@ -2,8 +2,8 @@
 
 ### Table of Contents
 
-- [Intercept the Load Request](#intercept-the-load-request)
-- [Manage Stream Priority](#manage-stream-priority)
+- [Manipulate the Load Request Data](#manipulate-the-load-request-data)
+- [Set Your Preferred Streaming Protocol](#set-your-preferred-streaming-protocol)
 - [Redirect Your Streams](#redirect-your-streams)
 - [Set Your Own Splash Image](#set-your-own-splash-image)
 
@@ -59,7 +59,7 @@ receiver.start();
 
 ### Set Your Preferred Streaming Protocol
 
-The Kaltura Receiver SDK allows you to choose what stream protocol you are preferring to play. By default, the receiver attempting to play first with HLS, then with DASH, and finally mp4. If you wish to change this priority you can just configure it differently.
+The Kaltura Receiver SDK allows you to choose what streaming protocol you are preferring to play. By default, the receiver attempting to play first with HLS, then with DASH, and finally mp4. If you wish to change this priority you can just configure it differently.
 
 ```html
 <!DOCTYPE html>
@@ -97,11 +97,11 @@ var receiver = new KalturaPlayer.cast.receiver.Receiver(conf);
 receiver.start();
 ```
 
-> **Important**: the defined engine must be "cast" (using that string or the enum above) and not "html5", since this is the engine that plays in the receiver.
+> **Important**: the defined engine must be "cast" (using that string or the enum above) and not "html5", since this is the engine that plays on the receiver.
 
 ### Redirect Your Streams
 
-If your are hosting your streams at third party and not at Kaltura platform, you'll need the receiver to handle the redirecting logic. To do so, configure it to force redirect to external streams.
+If your are hosting your streams at third party and not at Kaltura's platform, you'll need the receiver to handle the redirecting logic. To do so, configure it to force redirect to external streams.
 
 ```html
 <!DOCTYPE html>
