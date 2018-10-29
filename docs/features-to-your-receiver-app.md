@@ -7,7 +7,7 @@
 - [Redirect Your Streams](#redirect-your-streams)
 - [Set Your Own Splash Image](#set-your-own-splash-image)
 
-### Intercept the Load Request
+### Manipulate the Load Request Data
 
 In case you want to make some manipulations on the data that was sent by the sender, you can set a message interceptor, manipulate the data and return it to the receiver default load handler.
 
@@ -17,7 +17,7 @@ In case you want to make some manipulations on the data that was sent by the sen
 <head>
   <meta charset="UTF-8">
   <script src="//www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
-  <script src="//www.kaltura.com/p/{YOUR_PARTNER_ID}/sp/{YOUR_PARTNER_ID}00/embedPlaykitJs/uiconf_id/{UI_CONF_ID}/partner_id/{YOUR_PARTNER_ID}"></script>
+  <script src="//cdnapisec.kaltura.com/p/{YOUR_PARTNER_ID}/embedPlaykitJs/uiconf_id/{UI_CONF_ID}"></script>
 </head>
 <body>
 <cast-media-player/>
@@ -57,7 +57,7 @@ receiver.start();
 
 > **Important**: you must return the `receiver.onLoad` default handler from this function with the manipulated data, unless it won't work!
 
-### Manage Stream Priority
+### Set Your Preferred Streaming Protocol
 
 The Kaltura Receiver SDK allows you to choose what stream protocol you are preferring to play. By default, the receiver attempting to play first with HLS, then with DASH, and finally mp4. If you wish to change this priority you can just configure it differently.
 
@@ -67,7 +67,7 @@ The Kaltura Receiver SDK allows you to choose what stream protocol you are prefe
 <head>
   <meta charset="UTF-8">
   <script src="//www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
-  <script src="//www.kaltura.com/p/{YOUR_PARTNER_ID}/sp/{YOUR_PARTNER_ID}00/embedPlaykitJs/uiconf_id/{UI_CONF_ID}/partner_id/{YOUR_PARTNER_ID}"></script>
+  <script src="//cdnapisec.kaltura.com/p/{YOUR_PARTNER_ID}/embedPlaykitJs/uiconf_id/{UI_CONF_ID}"></script>
 </head>
 <body>
 <cast-media-player/>
@@ -109,7 +109,7 @@ If your are hosting your streams at third party and not at Kaltura platform, you
 <head>
   <meta charset="UTF-8">
   <script src="//www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
-  <script src="//www.kaltura.com/p/{YOUR_PARTNER_ID}/sp/{YOUR_PARTNER_ID}00/embedPlaykitJs/uiconf_id/{UI_CONF_ID}/partner_id/{YOUR_PARTNER_ID}"></script>
+  <script src="//cdnapisec.kaltura.com/p/{YOUR_PARTNER_ID}/embedPlaykitJs/uiconf_id/{UI_CONF_ID}"></script>
 </head>
 <body>
 <cast-media-player/>
@@ -138,7 +138,7 @@ To display your own custom splash image in the receiver, you can override the bu
 <head>
   <meta charset="UTF-8">
   <script src="//www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
-  <script src="//www.kaltura.com/p/{YOUR_PARTNER_ID}/sp/{YOUR_PARTNER_ID}00/embedPlaykitJs/uiconf_id/{UI_CONF_ID}/partner_id/{YOUR_PARTNER_ID}"></script>
+  <script src="//cdnapisec.kaltura.com/p/{YOUR_PARTNER_ID}/embedPlaykitJs/uiconf_id/{UI_CONF_ID}"></script>
   <style>
   #player {
     --splash-image: url('http://some/image.png');
