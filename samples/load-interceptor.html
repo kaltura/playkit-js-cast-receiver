@@ -20,6 +20,12 @@
     }
   });
 
+  var playerManager = cast.framework.CastReceiverContext.getInstance().getPlayerManager();
+  playerManager.setMessageInterceptor(cast.framework.messages.MessageType.LOAD, requestData => {
+    // Custom logic goes here
+    return receiver.onLoad(requestData);
+  });
+
   receiver.start();
 </script>
 </body>
