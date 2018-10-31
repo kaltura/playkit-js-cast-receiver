@@ -129,7 +129,17 @@ class ReceiverManager {
     this._handleLiveDvr(loadRequestData);
     this._setMediaInfo(loadRequestData, source);
     this._maybeSetDrmLicenseUrl(source);
-    resolve(loadRequestData);
+    const sources = this._player.config.sources;
+    if (sources.options && sources.options.forceRedirectExternalStreams) {
+      this._logger.debug('Redirect stream started');
+      Utils.Http.jsonp(loadRequestData.media.contentUrl, (data, url) => {
+        loadRequestData.media.contentUrl = sources.options.redirectExternalStreamsHandler(data, url);
+        this._logger.debug('Redirect stream ended', loadRequestData.media.contentUrl);
+        resolve(loadRequestData);
+      });
+    } else {
+      resolve(loadRequestData);
+    }
   }
 
   _setMediaInfo(loadRequestData: Object, source: Object): void {
