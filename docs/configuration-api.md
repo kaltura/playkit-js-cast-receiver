@@ -1,3 +1,5 @@
+# Configuration & API
+
 ### Table of Contents
 
 - [KPReceiverOptionsObject](#kpreceiveroptionsobject)
@@ -16,12 +18,42 @@ Type: [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Globa
 
 **Properties**
 
-- `provider` **[ProviderOptionsObject](#provideroptionsobject)**
-- `playback` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)?**
-  - `playback.streamPriority` **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[PKStreamPriorityObject](#pkstreampriorityobject)>?**
-- `sources` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)?**
-  - `sources.options` **[PKMediaSourceOptionsObject](#pkmediasourceoptionsobject)?**
-- `logLevel` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)**
+- `provider` **[ProviderOptionsObject](#provideroptionsobject)** The provider configuration.
+- `playback` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)?** The playback configuration.
+  - `playback.streamPriority` **[Array](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array)&lt;[PKStreamPriorityObject](#pkstreampriorityobject)>?** The list of engine and stream format pairs of the player by ascending order.
+- `sources` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)?** The sources configuration.
+  - `sources.options` **[PKMediaSourceOptionsObject](#pkmediasourceoptionsobject)?** Related sources options.
+- `logLevel` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** The player log level.
+
+**Examples**
+
+```javascript
+// Default config
+{
+ logLevel: "OFF",
+ playback: {
+   streamPriority: [
+     {
+       engine: "cast",
+       format: "hls"
+     },
+     {
+       engine: "ca`st",
+       format: "dash"
+     },
+     {
+       engine: "cast",
+       format: "progressive"
+     }
+   ]
+ },
+ sources: {
+   options: {
+     forceRedirectExternalStreams: false
+   }
+ }
+}
+```
 
 ## PKMediaSourceOptionsObject
 
@@ -62,7 +94,7 @@ The LOAD default handler of the receiver SDK. This handler should be called just
 
 - `loadRequestData` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** Media event LOAD request data. See [cast.framework.messages.LoadRequestData](https://developers.google.com/cast/docs/reference/caf_receiver/cast.framework.messages.LoadRequestData)
 
-Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)>**
+Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)>** The load promise.
 
 ### addEventListener
 
