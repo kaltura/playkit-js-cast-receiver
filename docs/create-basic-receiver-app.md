@@ -22,7 +22,7 @@ The following is the main structure of a basic receiver app, which has no custom
 </body>
 ```
 
-Here is the minimum code for a receiver application using the without any customization (except of enter your partner and entry IDs in the proper places). You can copy and paste this script exactly as-is into your app to create the receiver app.
+The following is the minimum code for a receiver application without any customization (except for entering your partner and entry IDs in the proper places). You can copy and paste this script exactly as-is into your app to create the receiver app.
 
 ```html
 <!DOCTYPE html>
