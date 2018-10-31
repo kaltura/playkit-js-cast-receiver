@@ -13,6 +13,8 @@
     "publish": "git push --follow-tags --no-verify origin master",
     "eslint": "eslint . --color",
     "flow": "flow check",
+    "docs:generate": "documentation build flow-typed/** src/** -f md",
+    "docs:serve": "documentation serve flow-typed/** src/** --watch",
     "precommit": "lint-staged",
     "commit:dist": "git add --force --all dist && (git commit -m 'chore: update dist' || exit 0)"
   },
