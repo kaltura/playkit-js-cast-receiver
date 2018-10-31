@@ -18,7 +18,7 @@ class ReceiverManagerAPI {
    * Internally calls to cast.framework.CastReceiverContext.start() to initializes system manager and media manager.
    * @public
    * @instance
-   * @param {Object=} options - Cast receiver context options. All options are optionals. See {@link https://developers.google.com/cast/docs/reference/caf_receiver/cast.framework.CastReceiverOptions|cast.framework.CastReceiverOptions}
+   * @param {Object=} options - Cast receiver context options. All options are optional. See {@link https://developers.google.com/cast/docs/reference/caf_receiver/cast.framework.CastReceiverOptions|cast.framework.CastReceiverOptions}
    * @returns {void}
    * @memberof Receiver
    */
