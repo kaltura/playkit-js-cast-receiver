@@ -75,24 +75,24 @@ Kaltura Receiver Player SDK.
 
 - `config` **[KPReceiverOptionsObject](#kpreceiveroptionsobject)** The receiver SDK configuration.
 
-### start
+### Start
 
-Initializes the receiver SDK, so that receiver app can receive requests from senders.
-Internally calls to cast.framework.CastReceiverContext.start() to initializes system manager and media manager.
+Initializes the receiver SDK so that receiver app can receive requests from senders.
+Calls to the cast.framework.CastReceiverContext.start() internally to initialize the system manager and media manager.
 
 **Parameters**
 
-- `options` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)?** Cast receiver context options. All options are optionals. See [cast.framework.CastReceiverOptions](https://developers.google.com/cast/docs/reference/caf_receiver/cast.framework.CastReceiverOptions) (optional, default `{}`)
+- `options` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)?** These are the cast receiver context options. Note that these are all optional. See [cast.framework.CastReceiverOptions](https://developers.google.com/cast/docs/reference/caf_receiver/cast.framework.CastReceiverOptions) (optional, default `{}`)
 
 Returns **void**
 
 ### onLoad
 
-The LOAD default handler of the receiver SDK. This handler should be called just in case LOAD interceptor is override by the app, otherwise it will be called internally.
+This is the LOAD default handler of the receiver SDK. This handler should be called if the LOAD interceptor is overrided by the app, otherwise it will be called internally.
 
 **Parameters**
 
-- `loadRequestData` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** Media event LOAD request data. See [cast.framework.messages.LoadRequestData](https://developers.google.com/cast/docs/reference/caf_receiver/cast.framework.messages.LoadRequestData)
+- `loadRequestData` **[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)** This is the media event LOAD request data. See [cast.framework.messages.LoadRequestData](https://developers.google.com/cast/docs/reference/caf_receiver/cast.framework.messages.LoadRequestData)
 
 Returns **[Promise](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Promise)&lt;[Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object)>** The load promise.
 
@@ -102,8 +102,8 @@ Adding an event listener to a receiver player event.
 
 **Parameters**
 
-- `type` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** The event type.
-- `listener` **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** The event handler.
+- `type` **[string](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String)** This is the event type.
+- `listener` **[Function](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function)** This is the event handler.
 
 Returns **void**
 

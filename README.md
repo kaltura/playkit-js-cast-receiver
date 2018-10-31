@@ -2,9 +2,9 @@
 
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
-PlayKit JS Cast Receiver is a custom receiver SDK relying on top of the Google [CAF Receiver SDK] and used to serve any of the PlayKit platform senders - [Web], [iOS] and [Android].
+PlayKit JS Cast Receiver is a custom receiver SDK, which relies on the Google [CAF Receiver SDK] and is used to serve any of the PlayKit platform senders - [Web], [iOS] and [Android].
 
-PlayKit JS Cast Receiver is written in [ECMAScript6], statically analysed using [Flow] and transpiled in ECMAScript5 using [Babel].
+PlayKit JS Cast Receiver is written in [ECMAScript6], statically analyzed using [Flow], and transpiled in ECMAScript5 using [Babel].
 
 [flow]: https://flow.org/
 [ecmascript6]: https://github.com/ericdouglas/ES6-Learning#articles--tutorials
