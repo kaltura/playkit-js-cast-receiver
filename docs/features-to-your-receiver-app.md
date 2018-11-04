@@ -25,6 +25,7 @@ If you want to manipulate or change the data that is sent by the sender, you can
 var conf = {
   provider: {
     partnerId: {YOUR_PARTNER_ID},
+    uiConfId: {UI_CONF_ID} // receiver type
   }
 };
 // Kaltura receiver player
@@ -74,7 +75,8 @@ The Kaltura Receiver SDK allows you to choose which streaming protocol you prefe
 <script>
 var conf = {
   provider: {
-    partnerId: {YOUR_PARTNER_ID}
+    partnerId: {YOUR_PARTNER_ID},
+    uiConfId: {UI_CONF_ID} // receiver type
   },
   playback: {
     streamPriority: [
@@ -116,7 +118,8 @@ If you're hosting your streams on a third party and not on Kaltura's platform, y
 <script>
 var conf = {
   provider: {
-    partnerId: {YOUR_PARTNER_ID}
+    partnerId: {YOUR_PARTNER_ID},
+    uiConfId: {UI_CONF_ID} // receiver type
   },
   sources: {
     options: {
@@ -150,7 +153,8 @@ To display your own custom splash image in the receiver, you can override the bu
 <script>
 var conf = {
   provider: {
-    partnerId: {YOUR_PARTNER_ID}
+    partnerId: {YOUR_PARTNER_ID},
+    uiConfId: {UI_CONF_ID} // receiver type
   }
 };
 var receiver = new KalturaPlayer.cast.receiver.Receiver(conf);
