@@ -48,7 +48,7 @@ receiver.start();
 </html>
 ```
 
-> As we don't have studio support yet, setting uiConf to be of receiver type can be done by delivery desk (studio support will be released soon).
+> Support for setting receiver player type is coming to player studio soon. In the meanwhile please reach out to delivery desk if you require setting up a receiver uiConf.
 
 ## Next Step
 
