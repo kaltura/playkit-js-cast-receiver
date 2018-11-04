@@ -38,6 +38,7 @@ The following is the minimum code for a receiver application without any customi
 var conf = {
   provider: {
     partnerId: {YOUR_PARTNER_ID},
+    uiConfId: {UI_CONF_ID} // receiver type
   }
 };
 var receiver = new KalturaPlayer.cast.receiver.Receiver(conf);
@@ -46,6 +47,8 @@ receiver.start();
 </body>
 </html>
 ```
+
+> As we don't have studio support yet, setting uiConf to be of receiver type can be done by delivery desk (studio support will be released soon).
 
 ## Next Step
 
