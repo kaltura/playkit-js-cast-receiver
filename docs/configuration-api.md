@@ -38,7 +38,7 @@ Type: [Object](https://developer.mozilla.org/docs/Web/JavaScript/Reference/Globa
        format: "hls"
      },
      {
-       engine: "ca`st",
+       engine: "cast",
        format: "dash"
      },
      {
