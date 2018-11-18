@@ -44,7 +44,7 @@ playerManager.setMessageInterceptor(cast.framework.messages.MessageType.LOAD, re
     var trimmedURL = requestData.media.entity.replace(/^[\/]+|[\/]+$/g, "");
     mediaID = trimmedURL.split("/").pop();
   }
-  // Set the media ID in the receiver custom data
+  // Set the media ID in the receiver's custom data
   requestData.media.customData = requestData.media.customData || {};
   requestData.media.customData.mediaInfo = {
     entryId: mediaID,
@@ -103,7 +103,7 @@ receiver.start();
 ```
 
 
-> **Important**: You must return the `receiver.onLoad` default handler from this function with the manipulated data, otherwise this won't work!
+> **Important**: You must return the `receiver.onLoad` default handler from the `LOAD` interceptor callback function with the manipulated data, otherwise this won't work!
 
 ### Set Your Preferred Streaming Protocol
 
