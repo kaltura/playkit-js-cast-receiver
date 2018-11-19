@@ -43,7 +43,7 @@ class ReceiverTracksManager {
     const nextActiveTextTrack = textTracks.find(t => activeTrackIds.includes(t.id));
     if (nextActiveTextTrack) {
       this._player.selectTrack(nextActiveTextTrack);
-    } else if (activeTextTrack.language !== 'off') {
+    } else if (activeTextTrack && activeTextTrack.language !== 'off') {
       const offTrack = textTracks.find(t => t.language === 'off');
       this._player.selectTrack(offTrack);
     }
@@ -53,7 +53,7 @@ class ReceiverTracksManager {
     const audioTracks = this._player.getTracks(TrackType.AUDIO);
     const activeAudioTrack = audioTracks.find(t => t.active);
     const nextActiveAudioTrack = audioTracks.find(t => activeTrackIds.includes(t.id));
-    if (activeAudioTrack.id !== nextActiveAudioTrack.id) {
+    if (activeAudioTrack && nextActiveAudioTrack && activeAudioTrack.id !== nextActiveAudioTrack.id) {
       this._player.selectTrack(nextActiveAudioTrack);
     }
   }
