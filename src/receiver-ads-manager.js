@@ -192,7 +192,7 @@ class ReceiverAdsManager {
     }
   }
 
-  _getAdBreakOptions(breaksEvent: Object): void {
+  _getAdBreakOptions(breaksEvent: Object): Object {
     const options = {};
     const currentBreak = this._playerManager.getBreakManager().getBreakById(breaksEvent.breakId);
     if (currentBreak) {
@@ -214,19 +214,21 @@ class ReceiverAdsManager {
     }
   }
 
-  _getAdOptions(breaksEvent: Object): void {
+  _getAdOptions(breaksEvent: Object): Object {
     const options = {};
     const currentBreak = this._playerManager.getBreakManager().getBreakById(breaksEvent.breakId);
-    const currentBreakClip = this._playerManager.getBreakManager().getBreakClipById(breaksEvent.breakClipId);
-    options.url = currentBreakClip.contentId;
-    options.contentType = currentBreakClip.contentType;
-    options.title = currentBreakClip.title;
-    options.position = currentBreak.breakClipIds.indexOf(currentBreakClip.id) + 1;
-    options.duration = currentBreakClip.duration;
-    options.clickThroughUrl = currentBreakClip.clickThroughUrl;
-    options.posterUrl = currentBreakClip.posterUrl;
-    options.skipOffset = currentBreakClip.whenSkippable;
-    options.linear = true;
+    if (currentBreak) {
+      const currentBreakClip = this._playerManager.getBreakManager().getBreakClipById(breaksEvent.breakClipId);
+      options.url = currentBreakClip.contentId;
+      options.contentType = currentBreakClip.contentType;
+      options.title = currentBreakClip.title;
+      options.position = currentBreak.breakClipIds.indexOf(currentBreakClip.id) + 1;
+      options.duration = currentBreakClip.duration;
+      options.clickThroughUrl = currentBreakClip.clickThroughUrl;
+      options.posterUrl = currentBreakClip.posterUrl;
+      options.skipOffset = currentBreakClip.whenSkippable;
+      options.linear = true;
+    }
     return options;
   }
 
