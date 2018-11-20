@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.2.0"></a>
+# [0.2.0](https://github.com/kaltura/playkit-js-cast-receiver/compare/v0.1.3...v0.2.0) (2018-11-20)
+
+
+### Bug Fixes
+
+* **FEC-8619:** default captions aren't applied after preroll ([#9](https://github.com/kaltura/playkit-js-cast-receiver/issues/9)) ([55c79fd](https://github.com/kaltura/playkit-js-cast-receiver/commit/55c79fd))
+* add null protections ([#14](https://github.com/kaltura/playkit-js-cast-receiver/issues/14)) ([ae85344](https://github.com/kaltura/playkit-js-cast-receiver/commit/ae85344))
+
+
+### Features
+
+* redirect stream ([#8](https://github.com/kaltura/playkit-js-cast-receiver/issues/8)) ([ee29d81](https://github.com/kaltura/playkit-js-cast-receiver/commit/ee29d81))
+
+
+
 <a name="0.1.3"></a>
 ## [0.1.3](https://github.com/kaltura/playkit-js-cast-receiver/compare/v0.1.2...v0.1.3) (2018-10-24)
 
