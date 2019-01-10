@@ -114,8 +114,10 @@ class ReceiverAdsManager {
     this._ad = ad;
   }
 
-  _onBreakClipStarted(): void {
-    this._sendEventAndCustomMessage(this._player.Event.AD_STARTED);
+  _onBreakClipStarted(breaksEvent: Object): void {
+    const adOptions = this._getAdOptions(breaksEvent);
+    const ad = new Ad(breaksEvent.breakClipId, adOptions);
+    this._sendEventAndCustomMessage(this._player.Event.AD_STARTED, {ad});
     this._adIsPlaying = true;
   }
 
