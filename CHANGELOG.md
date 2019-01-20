@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.3.0"></a>
+# [0.3.0](https://github.com/kaltura/playkit-js-cast-receiver/compare/v0.2.0...v0.3.0) (2019-01-20)
+
+
+### Features
+
+* **FEC-8749:** expose IMA ad data ([#15](https://github.com/kaltura/playkit-js-cast-receiver/issues/15)) ([06d5475](https://github.com/kaltura/playkit-js-cast-receiver/commit/06d5475))
+
+
+
 <a name="0.2.0"></a>
 # [0.2.0](https://github.com/kaltura/playkit-js-cast-receiver/compare/v0.1.3...v0.2.0) (2018-11-20)
 
