@@ -64,11 +64,18 @@ class ReceiverManager {
     this._reset();
     return new Promise((resovle, reject) => {
       const mediaInfo = loadRequestData.media.customData.mediaInfo;
+      const mediaConfig = loadRequestData.media.customData.mediaConfig;
       this._maybeCreateVmapAdsRequest(loadRequestData.media);
       this._maybeReplaceAdTagTimestamp(loadRequestData.media);
       this._eventManager.listen(this._player, this._player.Event.ERROR, event => reject(event));
       this._eventManager.listen(this._player, this._player.Event.SOURCE_SELECTED, event => this._onSourceSelected(event, loadRequestData, resovle));
-      this._player.loadMedia(mediaInfo);
+      if (mediaInfo) {
+        this._logger.debug('loadMedia', mediaInfo);
+        this._player.loadMedia(mediaInfo);
+      } else {
+        this._logger.debug('setMedia', mediaConfig);
+        this._player.setMedia(mediaConfig);
+      }
     });
   }
 
