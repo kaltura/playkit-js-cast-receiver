@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.4.0"></a>
+# [0.4.0](https://github.com/kaltura/playkit-js-cast-receiver/compare/v0.3.0...v0.4.0) (2019-12-05)
+
+
+### Features
+
+* **FEC-9175:** cast content coming from external sources ([#17](https://github.com/kaltura/playkit-js-cast-receiver/issues/17)) ([8667bbf](https://github.com/kaltura/playkit-js-cast-receiver/commit/8667bbf))
+
+
+
 <a name="0.3.0"></a>
 # [0.3.0](https://github.com/kaltura/playkit-js-cast-receiver/compare/v0.2.0...v0.3.0) (2019-01-20)
 
