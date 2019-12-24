@@ -34,6 +34,7 @@
     }
   },
   "devDependencies": {
+    "@playkit-js/playkit-js": "^0.58.1",
     "babel-cli": "^6.18.0",
     "babel-core": "^6.18.2",
     "babel-eslint": "^7.1.1",
@@ -74,6 +75,7 @@
     "lint-staged": "^7.1.2",
     "mocha": "^3.2.0",
     "mocha-cli": "^1.0.1",
+    "playkit-js-providers": "https://github.com/kaltura/playkit-js-providers.git#v2.20.5",
     "pre-push": "^0.1.1",
     "prettier": "^1.13.2",
     "sinon": "^2.0.0",
