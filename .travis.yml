@@ -52,6 +52,7 @@ jobs:
             tags: true
             branch: master
       after_deploy:
+        - chmod +x ./scripts/after_deploy.sh
         - ./scripts/after_deploy.sh "cast-receiver" "$TRAVIS_TAG" "$JENKINS_TAG_TOKEN"
     # publish canary package if on master
     - stage: Release canary
@@ -68,6 +69,8 @@ jobs:
           branch: master
       after_deploy:
         - currentVersion=$(npx -c 'echo "$npm_package_version"')
+        - echo $currentVersion
+        - chmod +x ./scripts/after_deploy.sh
         - ./scripts/after_deploy.sh "cast-receiver" "$currentVersion" "$JENKINS_CANARY_TOKEN"
     # Required tests
     - stage: Tests
