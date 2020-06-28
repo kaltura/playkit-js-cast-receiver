@@ -64,9 +64,12 @@ class ReceiverTracksManager {
 
   _setInitialTextTrack(textLanguage: ?string): void {
     const textTracksManager = this._playerManager.getTextTracksManager();
-    if (textLanguage) {
+    const textTracks = this._player.getTracks(TrackType.TEXT);
+    if (textLanguage && textTracks.some(track => track.language === textLanguage)) {
       this._logger.debug('Set initial text track - setActiveByLanguage', textLanguage);
       textTracksManager.setActiveByLanguage(textLanguage);
+    } else {
+      this._logger.warn(`Text track ${textLanguage} doesn't exist in the supported text tracks`);
     }
   }
 
