@@ -53,7 +53,6 @@ jobs:
             branch: master
       after_deploy:
         - currentVersion=$(npx -c 'echo "$npm_package_version"')
-        - conventional-github-releaser -t "$GH_TOKEN"
         - chmod +x ./scripts/after_deploy.sh
         - ./scripts/after_deploy.sh "cast-receiver" "$currentVersion" "$JENKINS_TAG_TOKEN"
     # publish canary package if on master
