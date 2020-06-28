@@ -29,3 +29,4 @@ elif [ "${TRAVIS_MODE}" = "release" ] || [ "${TRAVIS_MODE}" = "releaseCanary" ];
 else
 	echo "Unknown travis mode: ${TRAVIS_MODE}" 1>&2
 	exit 1
+fi
