@@ -35,6 +35,10 @@
  *  }
  *}
  */
+
+import {PKMediaSourceOptionsObject, PKStreamPriorityObject} from '@playkit-js/playkit-js';
+import {ProviderOptionsObject} from 'playkit-js-providers';
+
 type _KPReceiverOptionsObject = {
   provider: ProviderOptionsObject,
   playback?: {
