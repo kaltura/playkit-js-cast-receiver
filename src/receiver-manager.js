@@ -265,7 +265,7 @@ class ReceiverManager {
     }
   }
 
-  _maybeCreateVmapAdsRequest(media: Object): Object {
+  _maybeCreateVmapAdsRequest(media: Object): void {
     if (media.customData && media.customData.vmapAdsRequest) {
       media.vmapAdsRequest = media.customData.vmapAdsRequest;
     }

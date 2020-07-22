@@ -43,20 +43,20 @@ class ReceiverAdsManager {
 
   _attachListeners(): void {
     this._adLifecycleEventHandlers = {
-      [cast.framework.events.EventType.PLAYER_LOAD_COMPLETE]: this._onPlayerLoadComplete,
-      [cast.framework.events.EventType.BREAK_STARTED]: this._onBreakStarted,
-      [cast.framework.events.EventType.BREAK_ENDED]: this._onBreakEnded,
-      [cast.framework.events.EventType.BREAK_CLIP_LOADING]: this._onBreakClipLoading,
-      [cast.framework.events.EventType.BREAK_CLIP_STARTED]: this._onBreakClipStarted,
-      [cast.framework.events.EventType.BREAK_CLIP_ENDED]: this._onBreakClipEnded
+      [cast.framework.events.EventType.PLAYER_LOAD_COMPLETE]: this._onPlayerLoadComplete.bind(this),
+      [cast.framework.events.EventType.BREAK_STARTED]: this._onBreakStarted.bind(this),
+      [cast.framework.events.EventType.BREAK_ENDED]: this._onBreakEnded.bind(this),
+      [cast.framework.events.EventType.BREAK_CLIP_LOADING]: this._onBreakClipLoading.bind(this),
+      [cast.framework.events.EventType.BREAK_CLIP_STARTED]: this._onBreakClipStarted.bind(this),
+      [cast.framework.events.EventType.BREAK_CLIP_ENDED]: this._onBreakClipEnded.bind(this)
     };
     this._adTrackingEventHandlers = {
-      [cast.framework.events.EventType.PAUSE]: this._onAdPaused,
-      [cast.framework.events.EventType.PLAY]: this._onAdResumed
+      [cast.framework.events.EventType.PAUSE]: this._onAdPaused.bind(this),
+      [cast.framework.events.EventType.PLAY]: this._onAdResumed.bind(this)
     };
     this._playerEventHandlers = {
-      [EventType.MUTE_CHANGE]: this._onMuteChange,
-      [EventType.VOLUME_CHANGE]: this._onVolumeChange
+      [EventType.MUTE_CHANGE]: this._onMuteChange.bind(this),
+      [EventType.VOLUME_CHANGE]: this._onVolumeChange.bind(this)
     };
     Object.keys(this._adLifecycleEventHandlers).forEach(event => this._playerManager.addEventListener(event, this._adLifecycleEventHandlers[event]));
   }
@@ -140,7 +140,7 @@ class ReceiverAdsManager {
       this._timePercentEvent.AD_REACHED_75_PERCENT = true;
       this._sendEventAndCustomMessage(this._player.Event.AD_THIRD_QUARTILE);
     }
-    if (this._ad && !this._adCanSkipTriggered && this._ad.skippable) {
+    if (this._ad && !this._adCanSkipTriggered && this._ad && this._ad.skippable) {
       if (adCurrentTime >= this._ad.skipOffset) {
         this._sendEventAndCustomMessage(this._player.Event.AD_CAN_SKIP);
         this._adCanSkipTriggered = true;
@@ -168,14 +168,16 @@ class ReceiverAdsManager {
     if (toggle) {
       Object.keys(this._adTrackingEventHandlers).forEach(event => this._playerManager.addEventListener(event, this._adTrackingEventHandlers[event]));
       Object.keys(this._playerEventHandlers).forEach(event => this._player.addEventListener(event, this._playerEventHandlers[event]));
-      this._adProgressIntervalId = setInterval(this._onAdProgress, 300);
+      this._adProgressIntervalId = setInterval(this._onAdProgress.bind(this), 300);
     } else {
       Object.keys(this._adTrackingEventHandlers).forEach(event =>
         this._playerManager.removeEventListener(event, this._adTrackingEventHandlers[event])
       );
       Object.keys(this._playerEventHandlers).forEach(event => this._player.removeEventListener(event, this._playerEventHandlers[event]));
-      clearInterval(this._adProgressIntervalId);
-      this._adProgressIntervalId = null;
+      if (this._adProgressIntervalId) {
+        clearInterval(this._adProgressIntervalId);
+        this._adProgressIntervalId = null;
+      }
     }
   }
 
