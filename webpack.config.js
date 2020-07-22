@@ -15,12 +15,14 @@ const plugins = [
 
 if (!PROD) {
   plugins.push(
-    new CopyWebpackPlugin([
-      {
-        from: '',
-        to: '.'
-      }
-    ])
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: '',
+          to: '.'
+        }
+      ]
+    })
   );
 }
 
