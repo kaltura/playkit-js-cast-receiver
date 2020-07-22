@@ -304,6 +304,7 @@ class CastEngine extends FakeEventTarget {
 
   get crossOrigin(): ?string {
     // Empty implementation
+    return null;
   }
 
   get ended(): boolean {

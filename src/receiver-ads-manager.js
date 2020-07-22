@@ -10,11 +10,11 @@ class ReceiverAdsManager {
   _context: Object;
   _playerManager: Object;
   _player: Object;
-  _adProgressIntervalId: ?number;
+  _adProgressIntervalId: ?IntervalID;
   _ad: ?Ad;
   _adBreak: ?AdBreak;
   _adIsPlaying: boolean;
-  _adCanSkipTriggered: false;
+  _adCanSkipTriggered: boolean = false;
   _adLifecycleEventHandlers: {[event: string]: Function};
   _adTrackingEventHandlers: {[event: string]: Function};
   _playerEventHandlers: {[event: string]: Function};
@@ -28,7 +28,6 @@ class ReceiverAdsManager {
     this._context = cast.framework.CastReceiverContext.getInstance();
     this._playerManager = this._context.getPlayerManager();
     this._player = player;
-    this._bindMethods();
     this._attachListeners();
   }
 
@@ -40,20 +39,6 @@ class ReceiverAdsManager {
 
   adBreak(): boolean {
     return !!this._adBreak;
-  }
-
-  _bindMethods(): void {
-    this._onPlayerLoadComplete = this._onPlayerLoadComplete.bind(this);
-    this._onBreakStarted = this._onBreakStarted.bind(this);
-    this._onBreakEnded = this._onBreakEnded.bind(this);
-    this._onBreakClipLoading = this._onBreakClipLoading.bind(this);
-    this._onBreakClipStarted = this._onBreakClipStarted.bind(this);
-    this._onBreakClipEnded = this._onBreakClipEnded.bind(this);
-    this._onAdPaused = this._onAdPaused.bind(this);
-    this._onAdResumed = this._onAdResumed.bind(this);
-    this._onAdProgress = this._onAdProgress.bind(this);
-    this._onMuteChange = this._onMuteChange.bind(this);
-    this._onVolumeChange = this._onVolumeChange.bind(this);
   }
 
   _attachListeners(): void {
@@ -76,7 +61,7 @@ class ReceiverAdsManager {
     Object.keys(this._adLifecycleEventHandlers).forEach(event => this._playerManager.addEventListener(event, this._adLifecycleEventHandlers[event]));
   }
 
-  _onPlayerLoadComplete(): void {
+  _onPlayerLoadComplete = () => {
     const positions = [];
     const breakManager = this._playerManager.getBreakManager();
     if (breakManager) {
@@ -86,17 +71,17 @@ class ReceiverAdsManager {
         this._sendEventAndCustomMessage(this._player.Event.AD_MANIFEST_LOADED, {adBreaksPosition: positions});
       }
     }
-  }
+  };
 
-  _onBreakStarted(breaksEvent: Object): void {
+  _onBreakStarted = (breaksEvent: Object) => {
     this._toggleAdBreakListeners(true);
     const adBreakOptions = this._getAdBreakOptions(breaksEvent);
     const adBreak = new AdBreak(adBreakOptions);
     this._sendEventAndCustomMessage(this._player.Event.AD_BREAK_START, {adBreak: adBreak});
     this._adBreak = adBreak;
-  }
+  };
 
-  _onBreakEnded(breaksEvent: Object): void {
+  _onBreakEnded = (breaksEvent: Object) => {
     this._toggleAdBreakListeners(false);
     this._sendEventAndCustomMessage(this._player.Event.AD_BREAK_END);
     this._adBreak = null;
@@ -105,40 +90,40 @@ class ReceiverAdsManager {
     if (index + 1 === breaks.length) {
       this._sendEventAndCustomMessage(this._player.Event.ALL_ADS_COMPLETED);
     }
-  }
+  };
 
-  _onBreakClipLoading(breaksEvent: Object): void {
+  _onBreakClipLoading = (breaksEvent: Object) => {
     const adOptions = this._getAdOptions(breaksEvent);
     const ad = new Ad(breaksEvent.breakClipId, adOptions);
     this._sendEventAndCustomMessage(this._player.Event.AD_LOADED, {ad: ad});
     this._ad = ad;
-  }
+  };
 
-  _onBreakClipStarted(breaksEvent: Object): void {
+  _onBreakClipStarted = (breaksEvent: Object) => {
     const adOptions = this._getAdOptions(breaksEvent);
     const ad = new Ad(breaksEvent.breakClipId, adOptions);
     this._sendEventAndCustomMessage(this._player.Event.AD_STARTED, {ad});
     this._adIsPlaying = true;
-  }
+  };
 
-  _onBreakClipEnded(): void {
+  _onBreakClipEnded = () => {
     this._sendEventAndCustomMessage(this._player.Event.AD_COMPLETED);
     this._adIsPlaying = false;
     this._adCanSkipTriggered = false;
     this._ad = null;
-  }
+  };
 
-  _onAdPaused(): void {
+  _onAdPaused = () => {
     this._sendEventAndCustomMessage(this._player.Event.AD_PAUSED);
     this._adIsPlaying = false;
-  }
+  };
 
-  _onAdResumed(): void {
+  _onAdResumed = () => {
     this._sendEventAndCustomMessage(this._player.Event.AD_RESUMED);
     this._adIsPlaying = true;
-  }
+  };
 
-  _onAdProgress(): void {
+  _onAdProgress = () => {
     if (!this._ad) return;
     const adDuration = this._playerManager.getBreakClipDurationSec();
     const adCurrentTime = this._playerManager.getBreakClipCurrentTimeSec();
@@ -155,7 +140,7 @@ class ReceiverAdsManager {
       this._timePercentEvent.AD_REACHED_75_PERCENT = true;
       this._sendEventAndCustomMessage(this._player.Event.AD_THIRD_QUARTILE);
     }
-    if (!this._adCanSkipTriggered && this._ad.skippable) {
+    if (this._ad && !this._adCanSkipTriggered && this._ad.skippable) {
       if (adCurrentTime >= this._ad.skipOffset) {
         this._sendEventAndCustomMessage(this._player.Event.AD_CAN_SKIP);
         this._adCanSkipTriggered = true;
@@ -167,17 +152,17 @@ class ReceiverAdsManager {
         duration: adDuration
       }
     });
-  }
+  };
 
-  _onMuteChange(): void {
+  _onMuteChange = () => {
     if (this._player.muted) {
       this._sendEventAndCustomMessage(this._player.Event.AD_MUTED);
     }
-  }
+  };
 
-  _onVolumeChange(): void {
+  _onVolumeChange = () => {
     this._sendEventAndCustomMessage(this._player.Event.AD_VOLUME_CHANGED);
-  }
+  };
 
   _toggleAdBreakListeners(toggle: boolean): void {
     if (toggle) {

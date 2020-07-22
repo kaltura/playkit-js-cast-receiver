@@ -13,9 +13,7 @@ const plugins = [
   })
 ];
 
-if (PROD) {
-  plugins.push(new webpack.optimize.UglifyJsPlugin({sourceMap: true}));
-} else {
+if (!PROD) {
   plugins.push(
     new CopyWebpackPlugin([
       {
@@ -93,5 +91,8 @@ module.exports = {
       amd: 'kaltura-player-js',
       root: ['KalturaPlayer']
     }
+  },
+  optimization: {
+    minimize: PROD
   }
 };

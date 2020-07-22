@@ -1,32 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <script src="//www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
-  <script src="//192.168.2.3:3001/kaltura-ovp-player.js"></script>
-  <script src="./playkit-cast-receiver.js"></script>
-</head>
-<body>
-<cast-media-player/>
-<script>
-  var receiver = new KalturaPlayer.cast.receiver.Receiver({
-    logLevel: 'DEBUG',
-    provider: {
-      partnerId: 1091,
-      env: {
-        cdnUrl: 'http://qa-apache-php7.dev.kaltura.com/',
-        serviceUrl: 'http://qa-apache-php7.dev.kaltura.com/api_v3'
-      }
-    }
-  });
+  <head>
+    <meta charset="UTF-8" />
+    <script src="//www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
+    <script src="//192.168.2.3:3001/kaltura-ovp-player.js"></script>
+    <script src="./playkit-cast-receiver.js"></script>
+  </head>
+  <body>
+    <cast-media-player />
+    <script>
+      var receiver = new KalturaPlayer.cast.receiver.Receiver({
+        logLevel: 'DEBUG',
+        provider: {
+          partnerId: 1091,
+          env: {
+            cdnUrl: 'http://qa-apache-php7.dev.kaltura.com/',
+            serviceUrl: 'http://qa-apache-php7.dev.kaltura.com/api_v3'
+          }
+        }
+      });
 
-  var playerManager = cast.framework.CastReceiverContext.getInstance().getPlayerManager();
-  playerManager.setMessageInterceptor(cast.framework.messages.MessageType.LOAD, requestData => {
-    // Custom logic goes here
-    return receiver.onLoad(requestData);
-  });
+      var playerManager = cast.framework.CastReceiverContext.getInstance().getPlayerManager();
+      playerManager.setMessageInterceptor(cast.framework.messages.MessageType.LOAD, requestData => {
+        // Custom logic goes here
+        return receiver.onLoad(requestData);
+      });
 
-  receiver.start();
-</script>
-</body>
+      receiver.start();
+    </script>
+  </body>
 </html>
