@@ -1,5 +1,5 @@
-/dist
-yarn.lock
+dist
+yarn.lock1
 /src/index.html
 CHANGELOG.md
 LICENSE

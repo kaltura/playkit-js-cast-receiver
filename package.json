@@ -24,10 +24,10 @@
   "main": "dist/playkit-cast-receiver.js",
   "scripts": {
     "prebuild": "npm run clean",
-    "build": "NODE_ENV=production webpack",
+    "build": "webpack --mode production",
     "clean": "rm -rf ./dist",
     "commit:dist": "git add --force --all dist && (git commit -m 'chore: update dist' || exit 0)",
-    "dev": "webpack-dev-server",
+    "dev": "webpack-dev-server --mode development",
     "docs:generate": "documentation build flow-typed/** src/** -f md",
     "docs:serve": "documentation serve flow-typed/** src/** --watch",
     "eslint": "eslint . --color",
@@ -36,8 +36,8 @@
     "prettier:fix": "prettier --write .",
     "publish": "git push --follow-tags --no-verify origin master",
     "release": "standard-version",
-    "test": "NODE_ENV=test karma start --color",
-    "watch": "webpack --progress --colors --watch"
+    "test": "NODE_ENV=test karma start --color --mode development",
+    "watch": "webpack --progress --colors --watch --mode development"
   },
   "lint-staged": {
     "*.{js,jsx}": [
