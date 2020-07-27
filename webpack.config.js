@@ -1,9 +1,7 @@
 'use strict';
 
 const webpack = require('webpack');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
 const path = require('path');
-const PROD = process.env.NODE_ENV === 'production';
 const packageData = require('./package.json');
 
 const plugins = [
@@ -12,19 +10,6 @@ const plugins = [
     __NAME__: JSON.stringify(packageData.name)
   })
 ];
-
-if (PROD) {
-  plugins.push(new webpack.optimize.UglifyJsPlugin({sourceMap: true}));
-} else {
-  plugins.push(
-    new CopyWebpackPlugin([
-      {
-        from: '',
-        to: '.'
-      }
-    ])
-  );
-}
 
 module.exports = {
   context: __dirname + '/src',

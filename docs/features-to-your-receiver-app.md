@@ -13,95 +13,95 @@ If you want to manipulate or change the data that is sent by the sender, you can
 
 #### Examples
 
-* **Intercept Google home request and translate the received url to media ID:**
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <script src="//www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
-  <script src="//cdnapisec.kaltura.com/p/{YOUR_PARTNER_ID}/embedPlaykitJs/uiconf_id/{UI_CONF_ID}"></script>
-</head>
-<body>
-<cast-media-player/>
-<script>
-var conf = {
-  provider: {
-    partnerId: {YOUR_PARTNER_ID},
-    uiConfId: {UI_CONF_ID} // receiver type
-  }
-};
-  
-// Kaltura receiver player
-var receiver = new KalturaPlayer.cast.receiver.Receiver(conf);
-// Google cast player manager
-var playerManager = cast.framework.CastReceiverContext.getInstance().getPlayerManager();
-  
-// Set the load interceptor
-playerManager.setMessageInterceptor(cast.framework.messages.MessageType.LOAD, requestData => {
-  var mediaID = requestData.media.entity.split("/").pop();
-  if (!mediaID && mediaID.length === 0){
-    var trimmedURL = requestData.media.entity.replace(/^[\/]+|[\/]+$/g, "");
-    mediaID = trimmedURL.split("/").pop();
-  }
-  // Set the media ID in the receiver's custom data
-  requestData.media.customData = requestData.media.customData || {};
-  requestData.media.customData.mediaInfo = {
-    entryId: mediaID,
-    formats:["Web New"]
-  };
-  // Must return the manipulated data to the receiver default load handler!
-  return receiver.onLoad(requestData);
-});
-
-receiver.start();
-</script>
-</body>
-</html>
-```
-
-* **Set default VMAP ad tag in case not sent from the sender:**
+- **Intercept Google home request and translate the received url to media ID:**
 
 ```html
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <script src="//www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
-  <script src="//cdnapisec.kaltura.com/p/{YOUR_PARTNER_ID}/embedPlaykitJs/uiconf_id/{UI_CONF_ID}"></script>
-</head>
-<body>
-<cast-media-player/>
-<script>
-var conf = {
-  provider: {
-    partnerId: {YOUR_PARTNER_ID},
-    uiConfId: {UI_CONF_ID} // receiver type
-  }
-};
-  
-// Kaltura receiver player
-var receiver = new KalturaPlayer.cast.receiver.Receiver(conf);
-// Google cast player manager
-var playerManager = cast.framework.CastReceiverContext.getInstance().getPlayerManager();
-  
-// Set the load interceptor
-playerManager.setMessageInterceptor(cast.framework.messages.MessageType.LOAD, requestData => {
-  if (!requestData.media.vmapAdsRequest) {
-    requestData.media.vmapAdsRequest = {
-        adTagUrl: 'your_ad_tag_url';
-    };
-  }
-  // Must return the manipulated data to the receiver default load handler!
-  return receiver.onLoad(requestData);
-});
+  <head>
+    <meta charset="UTF-8" />
+    <script src="//www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
+    <script src="//cdnapisec.kaltura.com/p/{YOUR_PARTNER_ID}/embedPlaykitJs/uiconf_id/{UI_CONF_ID}"></script>
+  </head>
+  <body>
+    <cast-media-player />
+    <script>
+      var conf = {
+        provider: {
+          partnerId: {YOUR_PARTNER_ID},
+          uiConfId: {UI_CONF_ID} // receiver type
+        }
+      };
 
-receiver.start();
-</script>
-</body>
+      // Kaltura receiver player
+      var receiver = new KalturaPlayer.cast.receiver.Receiver(conf);
+      // Google cast player manager
+      var playerManager = cast.framework.CastReceiverContext.getInstance().getPlayerManager();
+
+      // Set the load interceptor
+      playerManager.setMessageInterceptor(cast.framework.messages.MessageType.LOAD, requestData => {
+        var mediaID = requestData.media.entity.split('/').pop();
+        if (!mediaID && mediaID.length === 0) {
+          var trimmedURL = requestData.media.entity.replace(/^[\/]+|[\/]+$/g, '');
+          mediaID = trimmedURL.split('/').pop();
+        }
+        // Set the media ID in the receiver's custom data
+        requestData.media.customData = requestData.media.customData || {};
+        requestData.media.customData.mediaInfo = {
+          entryId: mediaID,
+          formats: ['Web New']
+        };
+        // Must return the manipulated data to the receiver default load handler!
+        return receiver.onLoad(requestData);
+      });
+
+      receiver.start();
+    </script>
+  </body>
 </html>
 ```
 
+- **Set default VMAP ad tag in case not sent from the sender:**
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <script src="//www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
+    <script src="//cdnapisec.kaltura.com/p/{YOUR_PARTNER_ID}/embedPlaykitJs/uiconf_id/{UI_CONF_ID}"></script>
+  </head>
+  <body>
+    <cast-media-player />
+    <script>
+      var conf = {
+        provider: {
+          partnerId: {YOUR_PARTNER_ID},
+          uiConfId: {UI_CONF_ID} // receiver type
+        }
+      };
+
+      // Kaltura receiver player
+      var receiver = new KalturaPlayer.cast.receiver.Receiver(conf);
+      // Google cast player manager
+      var playerManager = cast.framework.CastReceiverContext.getInstance().getPlayerManager();
+
+      // Set the load interceptor
+      playerManager.setMessageInterceptor(cast.framework.messages.MessageType.LOAD, requestData => {
+        if (!requestData.media.vmapAdsRequest) {
+          requestData.media.vmapAdsRequest = {
+              adTagUrl: 'your_ad_tag_url';
+          };
+        }
+        // Must return the manipulated data to the receiver default load handler!
+        return receiver.onLoad(requestData);
+      });
+
+      receiver.start();
+    </script>
+  </body>
+</html>
+```
 
 > **Important**: You must return the `receiver.onLoad` default handler from the `LOAD` interceptor callback function with the manipulated data, otherwise this won't work!
 

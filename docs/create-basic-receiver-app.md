@@ -18,7 +18,7 @@ The following is the main structure of a basic receiver app, which has no custom
 
 ```html
 <body>
-  <cast-media-player/>
+  <cast-media-player />
 </body>
 ```
 
@@ -27,24 +27,24 @@ The following is the minimum code for a receiver application without any customi
 ```html
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <script src="//www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
-  <script src="//cdnapisec.kaltura.com/p/{YOUR_PARTNER_ID}/embedPlaykitJs/uiconf_id/{UI_CONF_ID}"></script>
-</head>
-<body>
-<cast-media-player/>
-<script>
-var conf = {
-  provider: {
-    partnerId: {YOUR_PARTNER_ID},
-    uiConfId: {UI_CONF_ID} // receiver type
-  }
-};
-var receiver = new KalturaPlayer.cast.receiver.Receiver(conf);
-receiver.start();
-</script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <script src="//www.gstatic.com/cast/sdk/libs/caf_receiver/v3/cast_receiver_framework.js"></script>
+    <script src="//cdnapisec.kaltura.com/p/{YOUR_PARTNER_ID}/embedPlaykitJs/uiconf_id/{UI_CONF_ID}"></script>
+  </head>
+  <body>
+    <cast-media-player />
+    <script>
+      var conf = {
+        provider: {
+          partnerId: {YOUR_PARTNER_ID},
+          uiConfId: {UI_CONF_ID} // receiver type
+        }
+      };
+      var receiver = new KalturaPlayer.cast.receiver.Receiver(conf);
+      receiver.start();
+    </script>
+  </body>
 </html>
 ```
 

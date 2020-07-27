@@ -1,4 +1,4 @@
-let webpackConfig = require('./webpack.config.js');
+const webpackConfig = require('./webpack.config.js');
 //Need to remove externals otherwise they won't be included in test
 delete webpackConfig.externals;
 // Need to define inline source maps when using karma
@@ -14,8 +14,8 @@ const customLaunchers = {
   }
 };
 
-module.exports = function(config) {
-  let karmaConf = {
+module.exports = config => {
+  const karmaConf = {
     logLevel: config.LOG_INFO,
     browsers: ['Chrome', 'Firefox'],
     concurrency: 1,

@@ -1,5 +1,5 @@
 describe('Cast Player', () => {
-  it('', function(done) {
+  it('', function (done) {
     done();
   });
 });
