@@ -1,6 +1,21 @@
-# Change Log
+# Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+## [0.6.0](https://github.com/kaltura/playkit-js-cast-receiver/compare/v0.4.0...v0.6.0) (2020-08-05)
+
+
+### Bug Fixes
+
+* add NPM deployment with release notes and fix flow issues ([#24](https://github.com/kaltura/playkit-js-cast-receiver/issues/24)) ([fd6ded4](https://github.com/kaltura/playkit-js-cast-receiver/commit/fd6ded4))
+
+
+### Features
+
+* **FEC-10160:** filter unsupported formats from the configured tracks passed to the receiver ([#28](https://github.com/kaltura/playkit-js-cast-receiver/issues/28)) ([132c9ec](https://github.com/kaltura/playkit-js-cast-receiver/commit/132c9ec))
+* **FEC-10290:** upgrade NPM packages ([#30](https://github.com/kaltura/playkit-js-cast-receiver/issues/30)) ([a3ba719](https://github.com/kaltura/playkit-js-cast-receiver/commit/a3ba719))
+
+
 
 <a name="0.5.0"></a>
 # [0.5.0](https://github.com/kaltura/playkit-js-cast-receiver/compare/v0.4.0...v0.5.0) (2020-07-07)
