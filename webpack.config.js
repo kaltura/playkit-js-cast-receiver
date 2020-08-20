@@ -20,7 +20,6 @@ module.exports = {
     path: __dirname + '/dist',
     filename: '[name].js',
     library: ['KalturaPlayer', 'cast', 'receiver'],
-    umdNamedDefine: true,
     devtoolModuleFilenameTemplate: './cast/receiver/[resource-path]'
   },
   devtool: 'source-map',
