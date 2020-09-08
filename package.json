@@ -79,7 +79,7 @@
     "flow-bin": "^0.129.0",
     "husky": "^4.2.5",
     "istanbul": "^0.4.5",
-    "kaltura-player-js": "https://github.com/kaltura/kaltura-player-js.git#v0.56.0",
+    "kaltura-player-js": "https://github.com/kaltura/kaltura-player-js.git#v1.0.0",
     "karma": "^5.1.0",
     "karma-chai": "^0.1.0",
     "karma-chrome-launcher": "^3.1.0",
@@ -105,7 +105,7 @@
     "webpack-dev-server": "^3.11.0"
   },
   "peerDependencies": {
-    "kaltura-player-js": "https://github.com/kaltura/kaltura-player-js.git#v0.56.0"
+    "kaltura-player-js": "https://github.com/kaltura/kaltura-player-js.git#v1.0.0"
   },
   "publishConfig": {
     "access": "public"
