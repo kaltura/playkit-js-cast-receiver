@@ -1,6 +1,6 @@
 {
   "name": "@playkit-js/playkit-js-cast-receiver",
-  "version": "0.6.1",
+  "version": "1.0.0",
   "keywords": [
     "cast",
     "google cast sdk",
