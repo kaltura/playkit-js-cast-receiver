@@ -18,6 +18,7 @@ class PlayerLoader {
       castMediaElement.style.position = 'absolute';
       const playerContainerEl = Utils.Dom.createElement('div');
       playerContainerEl.id = PLAYER_CONTAINER;
+      // Chromecast 2020 with Google TV sets display:none on player div, so define it inline so their css will not affect our div
       playerContainerEl.style.display = 'block';
       Utils.Dom.appendChild(document.body, playerContainerEl);
       unRegisterEngine(EngineType.HTML5);
