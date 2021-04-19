@@ -8,6 +8,7 @@ const {FakeEvent, EventManager, DrmScheme, Utils, getLogger} = core;
 const {CustomMessageType, CustomActionType, CustomActionMessage} = remote;
 
 export const CUSTOM_CHANNEL = 'urn:x-cast:com.kaltura.cast.playkit';
+const BROADCAST_STATUS_INTERVAL_FREQ: number = 1000;
 const LIVE_EDGE = -1;
 
 class ReceiverManager {
@@ -20,6 +21,7 @@ class ReceiverManager {
   _firstPlay: boolean = true;
   _tracksManager: ReceiverTracksManager;
   _adsManager: ReceiverAdsManager;
+  _broadcastStatusIntervalId: number | null = null;
   _messageInterceptorsHandlers: {[message: string]: Function} = {
     [cast.framework.messages.MessageType.LOAD]: this.onLoad,
     [cast.framework.messages.MessageType.MEDIA_STATUS]: this.onMediaStatus,
@@ -91,7 +93,6 @@ class ReceiverManager {
     if (this._player) {
       mediaStatus.customData.mediaInfo = this._player.getMediaInfo();
       if (this._player.isLive()) {
-        mediaStatus.currentTime = this._player.currentTime;
         if (mediaStatus.media) {
           mediaStatus.media.duration = this._player.duration;
         }
@@ -170,15 +171,9 @@ class ReceiverManager {
   }
 
   _handleLiveDvr(loadRequestData: Object): void {
-    if (this._player.isDvr()) {
-      if (loadRequestData.currentTime === LIVE_EDGE) {
-        delete loadRequestData.currentTime;
-        this._logger.debug(`Live DVR will seek to live edge`);
-      }
-      // Workaround to avoid Live & Dvr seek issue
-      this._playerManager.removeSupportedMediaCommands(cast.framework.messages.Command.SEEK);
-    } else if (!this._player.isLive()) {
-      this._playerManager.addSupportedMediaCommands(cast.framework.messages.Command.SEEK);
+    if (this._player.isDvr() && loadRequestData.currentTime === LIVE_EDGE) {
+      delete loadRequestData.currentTime;
+      this._logger.debug(`Live DVR will seek to live edge`);
     }
   }
 
@@ -211,11 +206,26 @@ class ReceiverManager {
   _onRequestPlayEvent(): void {
     this._logger.debug('Request play event');
     this._player.play();
+    this._clearBroadcastStatusInterval();
   }
 
   _onRequestPauseEvent(): void {
     this._logger.debug('Request pause event');
     this._player.pause();
+    // on live dvr pause continue to broadcast media status to help senders refresh their UIs
+    if (this._player.isDvr()) {
+      this._clearBroadcastStatusInterval();
+      this._broadcastStatusIntervalId = setInterval(() => {
+        this._playerManager.broadcastStatus(true);
+      }, BROADCAST_STATUS_INTERVAL_FREQ);
+    }
+  }
+
+  _clearBroadcastStatusInterval(): void {
+    if (this._broadcastStatusIntervalId) {
+      clearInterval(this._broadcastStatusIntervalId);
+      this._broadcastStatusIntervalId = null;
+    }
   }
 
   _onPlayerLoadCompleteEvent(): void {
