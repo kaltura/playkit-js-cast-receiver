@@ -21,7 +21,7 @@ class ReceiverManager {
   _firstPlay: boolean = true;
   _tracksManager: ReceiverTracksManager;
   _adsManager: ReceiverAdsManager;
-  _broadcastStatusIntervalId: number | null = null;
+  _broadcastStatusIntervalId: IntervalID | null = null;
   _messageInterceptorsHandlers: {[message: string]: Function} = {
     [cast.framework.messages.MessageType.LOAD]: this.onLoad,
     [cast.framework.messages.MessageType.MEDIA_STATUS]: this.onMediaStatus,
