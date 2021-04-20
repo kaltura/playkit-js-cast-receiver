@@ -120,6 +120,7 @@ class ReceiverManager {
   _reset(): void {
     this._shouldAutoPlay = true;
     this._firstPlay = true;
+    this._clearBroadcastStatusInterval();
     this._eventManager.removeAll();
     this._player.reset();
   }
@@ -127,6 +128,7 @@ class ReceiverManager {
   _destroy(): void {
     this._shouldAutoPlay = true;
     this._firstPlay = true;
+    this._clearBroadcastStatusInterval();
     this._eventManager.destroy();
     this._player.destroy();
   }
