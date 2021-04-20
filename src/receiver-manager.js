@@ -92,10 +92,8 @@ class ReceiverManager {
     mediaStatus.customData = mediaStatus.customData || {};
     if (this._player) {
       mediaStatus.customData.mediaInfo = this._player.getMediaInfo();
-      if (this._player.isLive()) {
-        if (this._player.isLive() && mediaStatus.media) {
-          mediaStatus.media.duration = this._player.duration;
-        }
+      if (this._player.isLive() && mediaStatus.media) {
+        mediaStatus.media.duration = this._player.duration;
       }
     }
     if (mediaStatus.playerState !== this._playerManager.getPlayerState()) {
