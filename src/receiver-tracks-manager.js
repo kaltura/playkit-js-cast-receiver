@@ -66,11 +66,15 @@ class ReceiverTracksManager {
     const textTracksManager = this._playerManager.getTextTracksManager();
     const textTracks = this._player.getTracks(TrackType.TEXT);
     if (textLanguage) {
-      if (textTracks.some(track => track.language === textLanguage)) {
-        this._logger.debug('Set initial text track - setActiveByLanguage', textLanguage);
-        textTracksManager.setActiveByLanguage(textLanguage);
+      if (textLanguage === 'off') {
+        this._logger.debug(`Initial track is off - don't set any track`);
       } else {
-        this._logger.warn(`Text track ${textLanguage} doesn't exist in the supported text tracks`);
+        if (textTracks.some(track => track.language === textLanguage)) {
+          this._logger.debug('Set initial text track - setActiveByLanguage', textLanguage);
+          textTracksManager.setActiveByLanguage(textLanguage);
+        } else {
+          this._logger.warn(`Text track ${textLanguage} doesn't exist in the supported text tracks`);
+        }
       }
     }
   }
