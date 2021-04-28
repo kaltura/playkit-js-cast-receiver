@@ -1,8 +1,23 @@
-# Changelog
+# Change Log
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-### [1.0.1](https://github.com/kaltura/playkit-js-cast-receiver/compare/v1.0.0...v1.0.1) (2020-11-03)
+<a name="1.1.0"></a>
+# [1.1.0](https://github.com/kaltura/playkit-js-cast-receiver/compare/v1.0.1...v1.1.0) (2021-04-28)
+
+
+### Bug Fixes
+
+* **FEC-11141:** Black video with sound when casting on Google Android TV ([#41](https://github.com/kaltura/playkit-js-cast-receiver/issues/41)) ([6cac7f2](https://github.com/kaltura/playkit-js-cast-receiver/commit/6cac7f2))
+
+
+### Features
+
+* **FEC-9236:** Add support for new live Alpha in cast SDK  ([#42](https://github.com/kaltura/playkit-js-cast-receiver/issues/42)) ([b4a170f](https://github.com/kaltura/playkit-js-cast-receiver/commit/b4a170f))
+
+
+
+## [1.0.1](https://github.com/kaltura/playkit-js-cast-receiver/compare/v1.0.0...v1.0.1) (2020-11-03)
 
 
 ### Build System
