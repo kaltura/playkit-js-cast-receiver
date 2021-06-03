@@ -108,10 +108,5 @@
   },
   "kcc": {
     "name": "playkit-cast-receiver"
-  },
-  "standard-version": {
-    "scripts": {
-      "postbump": "yarn run build && npm run commit:dist"
-    }
   }
 }
