@@ -18,6 +18,7 @@ cache:
 before_install:
   - export DISPLAY=:99.0
   - chmod +x ./scripts/travis.sh
+  - chmod +x ./scripts/after_deploy.sh
 
 script: ./scripts/travis.sh
 
@@ -25,11 +26,22 @@ stages:
   - Tests
   - Release canary
   - Release
+  - Deploy
 
 jobs:
   fast_finish: true
   include:
     # https://docs.travis-ci.com/user/build-stages/deploy-github-releases/
+    - stage: Deploy
+      name: "Deploying a new version"
+      if: tag IS present
+      env: TRAVIS_MODE=deploy
+      deploy:
+        - provider: script
+          on:
+            tags: true
+            all_branches: true
+          script: bash ./scripts/after_deploy.sh "$JENKINS_TAG_TOKEN"
     - stage: Release
       name: 'Releasing a new version'
       if: tag IS present
@@ -51,10 +63,6 @@ jobs:
           on:
             tags: true
             branch: master
-      after_deploy:
-        - currentVersion=$(npx -c 'echo "$npm_package_version"')
-        - chmod +x ./scripts/after_deploy.sh
-        - ./scripts/after_deploy.sh "cast-receiver" "$currentVersion" "$JENKINS_TAG_TOKEN"
     # publish canary package if on master
     - stage: Release canary
       if: (branch = master) AND (type != pull_request) AND commit_message !~ /^chore\(release\)/
@@ -69,10 +77,7 @@ jobs:
           tags: false
           branch: master
       after_deploy:
-        - currentVersion=$(npx -c 'echo "$npm_package_version"')
-        - echo $currentVersion
-        - chmod +x ./scripts/after_deploy.sh
-        - ./scripts/after_deploy.sh "cast-receiver" "$currentVersion" "$JENKINS_CANARY_TOKEN"
+        - ./scripts/after_deploy.sh "$JENKINS_CANARY_TOKEN"
     # Required tests
     - stage: Tests
       if: (branch = master) OR (tag IS present) OR (type = pull_request)
