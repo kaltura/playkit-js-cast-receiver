@@ -222,9 +222,6 @@ class CastEngine extends FakeEventTarget {
   }
 
   get currentTime(): number {
-    if (this.isLive()) {
-      return this._playerManager.getCurrentTimeSec() - this.getStartTimeOfDvrWindow();
-    }
     if (this._ended) {
       return this._playerManager.getDurationSec();
     }
@@ -261,13 +258,15 @@ class CastEngine extends FakeEventTarget {
   }
 
   get duration(): number {
-    if (this.isLive()) {
-      const range = this._playerManager.getLiveSeekableRange();
-      if (range) {
-        return range.end - this.getStartTimeOfDvrWindow();
-      }
-    }
     return this._playerManager.getDurationSec();
+  }
+
+  get liveDuration(): number {
+    const range = this._playerManager.getLiveSeekableRange();
+    if (range) {
+      return range.end;
+    }
+    return NaN;
   }
 
   get src(): string {
