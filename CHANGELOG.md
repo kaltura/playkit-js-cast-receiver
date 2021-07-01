@@ -1,6 +1,20 @@
-# Change Log
+# Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+### [1.1.1](https://github.com/kaltura/playkit-js-cast-receiver/compare/v1.1.0...v1.1.1) (2021-07-01)
+
+
+### Bug Fixes
+
+* **FEC-11374:** Live DVR starting to cast from beginning of the DVR instead of Live edge ([#51](https://github.com/kaltura/playkit-js-cast-receiver/issues/51)) ([d096a0f](https://github.com/kaltura/playkit-js-cast-receiver/commit/d096a0f))
+
+
+### Build System
+
+* **FEC-10700:** Improvement for CI/CD ([#50](https://github.com/kaltura/playkit-js-cast-receiver/issues/50)) ([2c10918](https://github.com/kaltura/playkit-js-cast-receiver/commit/2c10918))
+
+
 
 <a name="1.1.0"></a>
 # [1.1.0](https://github.com/kaltura/playkit-js-cast-receiver/compare/v1.0.1...v1.1.0) (2021-04-28)
