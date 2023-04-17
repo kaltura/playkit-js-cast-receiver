@@ -1,3 +1,4 @@
+// Create custom launcher in case running with Travis
 const launchers = {
   Chrome_browser: {
     base: 'ChromeHeadless',
