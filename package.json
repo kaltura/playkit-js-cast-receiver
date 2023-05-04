@@ -34,7 +34,7 @@
     "flow": "flow check",
     "precommit": "lint-staged",
     "prettier:fix": "prettier --write .",
-    "publish": "git push --follow-tags --no-verify origin master",
+    "pushTaggedRelease": "git push --follow-tags --no-verify origin master",
     "release": "standard-version",
     "test": "NODE_ENV=test karma start --color --mode development",
     "watch": "webpack --progress --colors --watch --mode development"
