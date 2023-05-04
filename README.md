@@ -1,6 +1,6 @@
 # PlayKit JS Cast Receiver
 
-[![Build Status](https://github.com/kaltura/kaltura/playkit-js-cast-receiver/actions/workflows/run_canary_full_flow.yaml/badge.svg)](https://github.com/kaltura/playkit-js-cast-receiver/actions/workflows/run_canary_full_flow.yaml)
+[![Build Status](https://github.com/kaltura/playkit-js-cast-receiver/actions/workflows/run_canary_full_flow.yaml/badge.svg)](https://github.com/kaltura/playkit-js-cast-receiver/actions/workflows/run_canary_full_flow.yaml)
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
 PlayKit JS Cast Receiver is a custom receiver SDK, which relies on the Google [CAF Receiver SDK] and is used to serve any of the PlayKit platform senders - [Web], [iOS] and [Android].
