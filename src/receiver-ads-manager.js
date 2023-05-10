@@ -1,5 +1,5 @@
 // @flow
-import {cast as remote, core} from 'kaltura-player-js';
+import {cast as remote, core} from '@playkit-js/kaltura-player-js';
 import {CUSTOM_CHANNEL} from './receiver-manager';
 
 const {EventType, Ad, AdBreak, AdBreakType, getLogger, FakeEvent} = core;

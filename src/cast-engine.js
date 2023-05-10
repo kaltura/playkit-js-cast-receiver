@@ -1,5 +1,5 @@
 // @flow
-import {core} from 'kaltura-player-js';
+import {core} from '@playkit-js/kaltura-player-js';
 import {CAST_MEDIA_PLAYER_TAG} from './player-loader';
 
 const {Track, Utils, FakeEvent, MediaType, getLogger, FakeEventTarget, EventManager, EventType, AudioTrack, TextTrack, AbrMode, MimeType} = core;

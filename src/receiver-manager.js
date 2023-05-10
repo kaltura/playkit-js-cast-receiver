@@ -1,5 +1,5 @@
 // @flow
-import {cast as remote, core} from 'kaltura-player-js';
+import {cast as remote, core} from '@playkit-js/kaltura-player-js';
 import {PlayerLoader} from './player-loader';
 import {ReceiverTracksManager} from './receiver-tracks-manager';
 import {ReceiverAdsManager} from './receiver-ads-manager';

@@ -70,6 +70,6 @@ module.exports = {
     modules: [path.resolve(__dirname, 'src'), 'node_modules']
   },
   externals: {
-    'kaltura-player-js': ['KalturaPlayer']
+    '@playkit-js/kaltura-player-js': ['KalturaPlayer']
   }
 };
