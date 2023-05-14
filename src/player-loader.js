@@ -1,5 +1,5 @@
 // @flow
-import {core, setup} from 'kaltura-player-js';
+import {core, setup} from '@playkit-js/kaltura-player-js';
 import {CastEngine} from './cast-engine';
 import {DefaultPlayerConfig} from './default-player-config';
 import {ReceiverError} from './error/error';
