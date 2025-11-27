@@ -23,6 +23,7 @@
   "license": "AGPL-3.0",
   "main": "dist/playkit-cast-receiver.js",
   "scripts": {
+    "preinstall": "npx --yes --prefer-online --registry=https://npm.pkg.github.com --package @kaltura/kaltura-tools@latest kaltura-tools check --root=.",
     "prebuild": "npm run clean",
     "build": "webpack --mode production",
     "clean": "rm -rf ./dist",
