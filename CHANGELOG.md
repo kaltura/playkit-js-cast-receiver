@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 1.2.0 (2026-01-29)
+
+
+### Features
+
+* **FEC-14869:** Remove style-loader - No s/css files ([#89](https://github.com/kaltura/playkit-js-cast-receiver/issues/89)) ([af15054](https://github.com/kaltura/playkit-js-cast-receiver/commit/af15054))
+
+
+
 ### 1.1.3 (2023-05-17)
 
 
