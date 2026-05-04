@@ -1,0 +1,161 @@
+{
+  "repository": "playkit-js-cast-receiver",
+  "version": "1.0",
+  "lastUpdated": "2026-05-04",
+  "coreResponsibility": {
+    "summary": "Custom Google Cast Receiver SDK for the Kaltura Player ecosystem that enables Chromecast playback by bridging Google CAF (Cast Application Framework) with Kaltura Player JS, serving cast requests from Web, iOS, and Android sender applications.",
+    "type": "middleware/provider layer",
+    "classification": "Google Cast Receiver Implementation"
+  },
+  "domainAndLogicOwnership": {
+    "featureOwnership": [
+      "Chromecast/Google Cast receiver application framework",
+      "Cast session management and receiver lifecycle",
+      "Media playback coordination on cast devices",
+      "Audio/text track selection and synchronization during casting",
+      "Ad break management during cast playback (VMAP/VAST)",
+      "DRM/Widevine license handling for protected content on cast devices",
+      "Live DVR stream support with live edge seeking",
+      "Custom message channel communication with senders",
+      "Text style/caption customization during casting",
+      "Stream format priority and source selection (HLS, DASH, Progressive)"
+    ],
+    "dataHandling": [
+      "Cast receiver context and player manager state",
+      "Media load request data from sender applications",
+      "Audio and text track state synchronization",
+      "Ad break clips, positions, and progress tracking",
+      "Player volume/mute state coordination with cast system volume",
+      "Live seekable range and DVR window management",
+      "Stream redirect handling for external streams"
+    ]
+  },
+  "integrationPoints": {
+    "upstream": {
+      "services": [
+        "Google CAF (Cast Application Framework) Receiver SDK",
+        "Kaltura Player JS core engine",
+        "Kaltura Backend Services (via playkit-js-providers)"
+      ],
+      "repositories": [
+        "@playkit-js/kaltura-player-js (peer dependency)",
+        "playkit-js-providers (media/session provider)",
+        "playkit-js (core playback engine)"
+      ]
+    },
+    "downstream": {
+      "consumers": [
+        "playkit-js-cast-sender (Web sender SDK)",
+        "playkit-ios-googlecast (iOS sender SDK)",
+        "playkit-android-googlecast (Android sender SDK)",
+        "Custom Chromecast receiver applications built by integrators"
+      ],
+      "uiLayers": [
+        "cast-media-player HTML element (Google Cast UI)",
+        "Chromecast device display output"
+      ]
+    },
+    "externalApis": {
+      "googleCastSdk": {
+        "namespace": "cast.framework",
+        "components": [
+          "CastReceiverContext",
+          "PlayerManager",
+          "BreakManager",
+          "AudioTracksManager",
+          "TextTracksManager",
+          "messages.MessageType (LOAD, MEDIA_STATUS, STOP)",
+          "events.EventType (BREAK_STARTED, BREAK_ENDED, REQUEST_PLAY, etc.)"
+        ]
+      },
+      "kalturaApis": [
+        "Kaltura Player JS setup() API",
+        "Kaltura loadMedia/setMedia APIs",
+        "Kaltura DRM license endpoints (Widevine)"
+      ],
+      "customChannel": "urn:x-cast:com.kaltura.cast.playkit"
+    }
+  },
+  "technicalStack": {
+    "primaryLanguages": [
+      "JavaScript (ES6+)",
+      "Flow (static type checking)"
+    ],
+    "frameworks": [
+      "Google CAF Receiver SDK",
+      "Kaltura Player JS"
+    ],
+    "buildTools": [
+      "Webpack",
+      "Babel"
+    ],
+    "testingFrameworks": [
+      "Karma",
+      "Mocha",
+      "Chai",
+      "Sinon"
+    ],
+    "entryPoints": {
+      "mainExport": "src/index.js",
+      "coreModules": {
+        "ReceiverManagerAPI": "src/receiver-manager-api.js - Public API exposed to receiver apps",
+        "ReceiverManager": "src/receiver-manager.js - Core cast session and message handling",
+        "CastEngine": "src/cast-engine.js - Custom playback engine for cast environment",
+        "PlayerLoader": "src/player-loader.js - Kaltura Player initialization for cast",
+        "ReceiverTracksManager": "src/receiver-tracks-manager.js - Audio/text track management",
+        "ReceiverAdsManager": "src/receiver-ads-manager.js - Ad break lifecycle management"
+      },
+      "configFiles": {
+        "defaultConfig": "src/default-player-config.js",
+        "typeDefinitions": "flow-typed/receiver-options-object.js"
+      }
+    },
+    "outputBundle": "dist/playkit-cast-receiver.js"
+  },
+  "triageKeywords": [
+    "chromecast",
+    "cast receiver",
+    "google cast",
+    "CAF receiver",
+    "cast-media-player",
+    "CastReceiverContext",
+    "PlayerManager",
+    "cast session",
+    "receiver app",
+    "casting",
+    "chromecast receiver",
+    "cast sender",
+    "urn:x-cast:com.kaltura.cast.playkit",
+    "cast tracks",
+    "cast ads",
+    "cast DRM",
+    "Widevine cast",
+    "live DVR cast",
+    "cast volume",
+    "cast playback"
+  ],
+  "errorPatterns": [
+    "CAST_ELEMENT_NOT_FOUND (code: 100020)",
+    "cast-media-element tag isn't found",
+    "ReceiverManager",
+    "CastEngine",
+    "onLoad interceptor",
+    "cast.framework.messages.LoadRequestData",
+    "cast playback failed",
+    "receiver connection error",
+    "cast session disconnected",
+    "track selection during cast"
+  ],
+  "relatedRepositories": {
+    "senderSdks": [
+      "kaltura/playkit-js-cast-sender",
+      "kaltura/playkit-ios-googlecast", 
+      "kaltura/playkit-android-googlecast"
+    ],
+    "coreDependencies": [
+      "kaltura/kaltura-player-js",
+      "kaltura/playkit-js",
+      "kaltura/playkit-js-providers"
+    ]
+  }
+}
